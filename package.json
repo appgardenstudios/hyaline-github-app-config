@@ -1,0 +1,21 @@
+{
+  "name": "hyaline-config",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    ".github/actions/_audit",
+    ".github/actions/_check-pr",
+    ".github/actions/_doctor",
+    ".github/actions/_extract",
+    ".github/actions/_manual_extract-all",
+    ".github/actions/_merge"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "prepare": "husky"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

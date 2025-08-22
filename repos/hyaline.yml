@@ -1,0 +1,76 @@
+llm:
+  provider: ${HYALINE_LLM_PROVIDER}
+  model: ${HYALINE_LLM_MODEL}
+  key: ${HYALINE_LLM_TOKEN}
+
+github:
+  token: ${HYALINE_GITHUB_TOKEN}
+
+extract:
+  source:
+    id: hyaline
+    description: Documentation for Hyaline
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_TOKEN}
+    include:
+      - "www/content/documentation/**/*.md"
+      - "www/content/about.md"
+      - "www/content/security.md"
+      - "cli/README.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+
+check:
+  code:
+    include:
+      - "cli/**/*.go"
+    exclude:
+      - "**/*_test.go"
+      - "cli/e2e/**/*"
+      - "cli/benchmarks/**/*"
+  documentation:
+    include:
+      - source: "hyaline"
+        document: "**/*"
+  options:
+    detectDocumentationUpdates:
+      source: hyaline
+    updateIf:
+      touched:
+        - code:
+            path: "cli/cmd/**/*"
+          documentation:
+            source: "hyaline"
+            document: "www/content/documentation/reference/cli.md"
+        - code:
+            path: "cli/internal/config/**/*"
+          documentation:
+            source: "hyaline"
+            document: "www/content/documentation/reference/config.md"
+        - code:
+            path: "cli/internal/sqlite/schema.sql"
+          documentation:
+            source: "hyaline"
+            document: "www/content/documentation/reference/data-set.md"
+
+audit:
+  rules:
+    - id: "content-length-check"
+      description: "Check that README has sufficient content"
+      documentation:
+        - source: "**/*"
+          document: "README.md"
+      checks:
+        content:
+          min-length: 100

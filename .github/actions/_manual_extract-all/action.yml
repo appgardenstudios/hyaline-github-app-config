@@ -1,0 +1,17 @@
+name: 'Action - Extract All'
+description: 'Extract All'
+inputs:
+  extract_workflow_ref:
+    description: 'Extract Workflow Ref (Branch or Tag)'
+    default: main
+    required: true
+  trigger_merge:
+    description: 'Trigger Merge Workflow'
+    required: true
+  merge_workflow_ref:
+    description: 'Merge Workflow Ref (Branch or Tag)'
+    default: main
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

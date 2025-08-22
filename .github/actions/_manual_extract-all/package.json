@@ -1,0 +1,19 @@
+{
+  "name": "manual-extract-all",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "ncc build src/index.js --out dist"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "20"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1"
+  }
+}

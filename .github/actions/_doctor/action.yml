@@ -1,0 +1,5 @@
+name: 'Action - Doctor'
+description: 'Doctor'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
