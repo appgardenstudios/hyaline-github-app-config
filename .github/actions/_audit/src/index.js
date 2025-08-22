@@ -7,7 +7,7 @@ const {DefaultArtifactClient} = require('@actions/artifact');
 
 const artifact = new DefaultArtifactClient();
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
-const octokit = github.getOctokit(configGitHubToken);
+const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
  * Returns the path to the current documentation, or blank
@@ -15,7 +15,7 @@ const octokit = github.getOctokit(configGitHubToken);
  * @returns {Promise<string>}
  */
 async function getCurrentDocumentation() {
-  const {data: currentArtifact} = await octokit.rest.actions.listArtifactsForRepo({
+  const {data: currentArtifact} = await configOctokit.rest.actions.listArtifactsForRepo({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     name: '_current-documentation',

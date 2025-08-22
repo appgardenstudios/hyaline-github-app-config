@@ -40,7 +40,6 @@ jobs:
           config: ${{ inputs.config }}
           sources: ${{ inputs.sources }}
         env:
-          HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
           HYALINE_LLM_PROVIDER: ${{ vars.HYALINE_LLM_PROVIDER }}
           HYALINE_LLM_MODEL: ${{ vars.HYALINE_LLM_MODEL }}

@@ -6,8 +6,8 @@ const github = require('@actions/github');
 const {DefaultArtifactClient} = require('@actions/artifact');
 
 const artifact = new DefaultArtifactClient();
-const githubToken = process.env.HYALINE_GITHUB_TOKEN || '';
-const octokit = github.getOctokit(githubToken);
+const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
+const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
  * Returns the path to the current documentation, or blank
@@ -15,7 +15,7 @@ const octokit = github.getOctokit(githubToken);
  * @returns {Promise<string>}
  */
 async function getCurrentDocumentation() {
-  const {data: currentArtifact} = await octokit.rest.actions.listArtifactsForRepo({
+  const {data: currentArtifact} = await configOctokit.rest.actions.listArtifactsForRepo({
     owner: github.context.repo.owner,
     repo: github.context.repo.repo,
     name: '_current-documentation',
@@ -35,7 +35,7 @@ async function getCurrentDocumentation() {
     await artifact.downloadArtifact(artifactId, {
       path: downloadPrefix,
       findBy: {
-        token: githubToken,
+        token: configGitHubToken,
         workflowRunId: runId,
         repositoryOwner: github.context.repo.owner,
         repositoryName: github.context.repo.repo,
