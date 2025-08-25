@@ -390,19 +390,9 @@ async function doctor() {
 
     // Check repos
     const owner = github.context.repo.owner;
-    let repositories;
-    // Determine if we're using a personal access token or GitHub App installation token
-    if (hyalineGitHubToken.startsWith('github_pat_')) {
-      console.log('Retrieving repositories for authenticated user');
-      repositories = await hyalineOctokit.paginate(hyalineOctokit.rest.repos.listForAuthenticatedUser, {
-        type: 'all',
-      });
-    } else {
-      console.log('Retrieving repositories for GitHub App installation');
-      repositories = await hyalineOctokit.paginate(hyalineOctokit.rest.apps.listReposAccessibleToInstallation, 
-        (response) => response.data.repositories
-      );
-    }
+    let repositories = await hyalineOctokit.paginate(hyalineOctokit.rest.repos.listForAuthenticatedUser, {
+      type: 'all',
+    });
     
     repositories.forEach(repo => {
       if (repo.fork || repo.owner.login !== owner) {
