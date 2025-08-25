@@ -31845,6 +31845,7 @@ const hyalineOctokit = github.getOctokit(hyalineGitHubToken);
 
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
+<<<<<<< HEAD
 
 /**
  * Get the default branch from the GitHub context.
@@ -31854,6 +31855,8 @@ const configOctokit = github.getOctokit(configGitHubToken);
 function getDefaultBranch() {
   return github.context.payload.repository.default_branch;
 }
+=======
+>>>>>>> 7f7b8dc (husky)
 
 /**
  * Get the llm block of the hyaline config.
