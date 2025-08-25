@@ -18,12 +18,16 @@ on:
         default: main
         required: true
 
+permissions: {}
+
 jobs:
   extract-all:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
       - name: Setup Hyaline CLI
         uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Extract All
@@ -33,5 +37,4 @@ jobs:
           trigger_merge: ${{ inputs.trigger_merge }}
           merge_workflow_ref: ${{ inputs.merge_workflow_ref }}
         env:
-          HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
