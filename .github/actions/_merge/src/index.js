@@ -7,7 +7,7 @@ const io = require('@actions/io');
 const {DefaultArtifactClient} = require('@actions/artifact');
 
 const artifact = new DefaultArtifactClient();
-const githubToken = process.env.HYALINE_GITHUB_TOKEN || '';
+const githubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const octokit = github.getOctokit(githubToken);
 
 const EXTRACT_ARTIFACT_NAME = '_extracted-documentation';
