@@ -3,6 +3,8 @@ name: Doctor
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   doctor:
     runs-on: ubuntu-latest
@@ -10,12 +12,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.HYALINE_GITHUB_TOKEN }}
+          token: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
       - name: Setup Hyaline CLI
         uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Doctor
         uses: ./.github/actions/_doctor
         env:
+          HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
           HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_LLM_PROVIDER: ${{ vars.HYALINE_LLM_PROVIDER }}
           HYALINE_LLM_MODEL: ${{ vars.HYALINE_LLM_MODEL }}

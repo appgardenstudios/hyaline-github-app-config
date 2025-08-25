@@ -4,8 +4,11 @@ const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
 
-const githubToken = process.env.HYALINE_GITHUB_TOKEN || '';
-const octokit = github.getOctokit(githubToken);
+const hyalineGitHubToken = process.env.HYALINE_GITHUB_TOKEN || '';
+const hyalineOctokit = github.getOctokit(hyalineGitHubToken);
+
+const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
+const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
  * Get the llm block of the hyaline config.
@@ -84,13 +87,75 @@ function getCheck(name, language) {
       break;
     case 'javascript':
       include = ['**/*.js', 'package.json'];
-      exclude = ['**/*.test.js'];
+      exclude = ['**/*.test.js', '**/*.spec.js'];
+      break;
+    case 'python':
+      include = ['**/*.py', 'requirements.txt', 'setup.py', 'pyproject.toml'];
+      exclude = ['**/test_*.py', '**/*_test.py', '**/tests/**'];
+      break;
+    case 'typescript':
+      include = ['**/*.ts', '**/*.tsx', 'package.json', 'tsconfig.json'];
+      exclude = ['**/*.test.ts', '**/*.spec.ts', '**/*.test.tsx', '**/*.spec.tsx', '**/*.d.ts'];
+      break;
+    case 'java':
+      include = ['**/*.java', 'pom.xml', 'build.gradle', '*.gradle'];
+      exclude = ['**/Test*.java', '**/*Test.java', '**/tests/**', '**/test/**'];
+      break;
+    case 'c#':
+      include = ['**/*.cs', '**/*.csproj', '**/*.sln'];
+      exclude = ['**/Test*.cs', '**/*Test.cs', '**/*Tests.cs', '**/tests/**'];
+      break;
+    case 'c++':
+      include = ['**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.hpp', '**/*.h', '**/*.hh', 'CMakeLists.txt', 'Makefile'];
+      exclude = ['**/test_*.cpp', '**/*_test.cpp', '**/tests/**'];
+      break;
+    case 'php':
+      include = ['**/*.php', 'composer.json'];
+      exclude = ['**/Test*.php', '**/*Test.php', '**/tests/**', '**/*_test.php'];
+      break;
+    case 'c':
+      include = ['**/*.c', '**/*.h', 'Makefile', 'CMakeLists.txt'];
+      exclude = ['**/test_*.c', '**/*_test.c', '**/tests/**'];
+      break;
+    case 'ruby':
+      include = ['**/*.rb', 'Gemfile', 'Rakefile', '*.gemspec'];
+      exclude = ['**/test_*.rb', '**/*_test.rb', '**/*_spec.rb', '**/spec/**', '**/test/**'];
+      break;
+    case 'rust':
+      include = ['**/*.rs', 'Cargo.toml'];
+      exclude = ['**/tests/**', '**/test_*.rs'];
+      break;
+    case 'r':
+      include = ['**/*.R', '**/*.r', 'DESCRIPTION', 'NAMESPACE'];
+      exclude = ['**/test_*.R', '**/*_test.R', '**/tests/**'];
+      break;
+    case 'kotlin':
+      include = ['**/*.kt', '**/*.kts', 'build.gradle.kts', 'build.gradle'];
+      exclude = ['**/Test*.kt', '**/*Test.kt', '**/test/**', '**/tests/**'];
+      break;
+    case 'swift':
+      include = ['**/*.swift', 'Package.swift'];
+      exclude = ['**/Test*.swift', '**/*Test.swift', '**/*Tests.swift', '**/Tests/**'];
+      break;
+    case 'scala':
+      include = ['**/*.scala', 'build.sbt', '*.sbt'];
+      exclude = ['**/Test*.scala', '**/*Test.scala', '**/*Spec.scala', '**/test/**', '**/tests/**'];
+      break;
+    case 'dart':
+      include = ['**/*.dart', 'pubspec.yaml'];
+      exclude = ['**/test_*.dart', '**/*_test.dart', '**/test/**', '**/tests/**'];
+      break;
+    case 'elixir':
+      include = ['**/*.ex', '**/*.exs', 'mix.exs'];
+      exclude = ['**/test_*.ex', '**/*_test.exs', '**/test/**'];
       break;
   }
 
-  // If we mapped to nothing return nothing to check
+  // If we mapped to nothing, disable check
   if (!include || !exclude) {
-    return '';
+    return `check:
+  disabled: true
+`;
   }
 
   return `check:
@@ -237,15 +302,67 @@ jobs:
 }
 
 /**
- * Get a PR Body based on changes
+ * Validate config files in a directory
+ * 
+ * @param {string} directory 
+ * @returns {Promise<string[]>} validation errors
+ */
+async function validateConfigs(directory) {
+  const validationErrors = [];
+  
+  if (!fs.existsSync(directory)) {
+    return validationErrors;
+  }
+  
+  const configFiles = fs.readdirSync(directory).filter(file => file.endsWith('.yml'));
+  
+  for (const configFile of configFiles) {
+    const configPath = `./${directory}/${configFile}`;
+    const outputPath = `./validation-${configFile}.json`;
+    
+    try {
+      await exec.exec('hyaline', ['validate', 'config', '--config', configPath, '--output', outputPath]);
+      const validationResult = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+      if (!validationResult.valid) {
+        validationErrors.push(`${configPath}: ${validationResult.error}`);
+      }
+      fs.unlinkSync(outputPath); // Clean up temp file
+    } catch (error) {
+      console.error(`Failed to validate ${configPath}`, error);
+    }
+  }
+  
+  return validationErrors;
+}
+
+/**
+ * Get a PR Body based on changes and validation errors
  * 
  * @param {Array<string>} changes 
+ * @param {Array<string>} validationErrors 
  * @returns 
  */
-function getPRBody(changes) {
-  return `# Changes
+function getPRBody(changes, validationErrors = []) {
+  let body = '';
+  
+  if (changes.length > 0) {
+    body += `## Changes
   - ${changes.join('\n  - ')}
+
 `;
+  }
+  
+  if (validationErrors.length > 0) {
+    body += `## Validation Errors
+  - ${validationErrors.join('\n  - ')}
+
+`;
+  }
+  
+  body += `Note: Documentation extraction or checking can be disabled by setting \`disabled: true\` for \`extract\` or \`check\`, respectively.
+`;
+  
+  return body;
 }
 
 async function doctor() {
@@ -273,11 +390,26 @@ async function doctor() {
 
     // Check repos
     const owner = github.context.repo.owner;
-    const orgRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
-      org: owner,
-      type: 'sources',
-    });
-    orgRepos.forEach(repo => {
+    let repositories;
+    // Determine if we're using a personal access token or GitHub App installation token
+    if (hyalineGitHubToken.startsWith('github_pat_')) {
+      console.log('Retrieving repositories for authenticated user');
+      repositories = await hyalineOctokit.paginate(hyalineOctokit.rest.repos.listForAuthenticatedUser, {
+        type: 'all',
+      });
+    } else {
+      console.log('Retrieving repositories for GitHub App installation');
+      repositories = await hyalineOctokit.paginate(hyalineOctokit.rest.apps.listReposAccessibleToInstallation, 
+        (response) => response.data.repositories
+      );
+    }
+    
+    repositories.forEach(repo => {
+      if (repo.fork || repo.owner.login !== owner) {
+        console.log(`Skipping ${repo.full_name}`);
+        return;
+      }
+
       console.log(`Examining ${repo.full_name}`);
 
       // If there is no config, create one
@@ -316,9 +448,15 @@ async function doctor() {
       changes.push('Ensure the Manual - Run Audit workflow is up-to-date');
     }
 
+    // Validate config files
+    console.log('Validating config files...');
+    const repoValidationErrors = await validateConfigs('repos');
+    const siteValidationErrors = await validateConfigs('sites');
+    const validationErrors = [...repoValidationErrors, ...siteValidationErrors];
+
     // Branch and add changes
-    if (changes.length > 0) {
-      console.log(`${changes.length} potential changes detected`);
+    if (changes.length > 0 || validationErrors.length > 0) {
+      console.log(`${changes.length} potential changes detected, ${validationErrors.length} validation errors found`);
       const branch = `doctor-${Date.now()}`;
       
       await exec.exec('git', ['config', 'user.name', '"github-actions[bot]"']);
@@ -328,17 +466,26 @@ async function doctor() {
       
       // If there are actually changes, commit, push, and open PR
       const output = await exec.getExecOutput('git', ['status', '-s']);
-      if (output.stdout.trim()) {
-        console.log(`Committing changes to branch ${branch}`);
-        await exec.exec('git', ['commit', '-m', '"Doctor changes"']);
+      const hasFileChanges = !!output.stdout.trim();
+      
+      if (hasFileChanges || validationErrors.length > 0) {
+        // If we have validation errors but no file changes, make an empty commit
+        if (!hasFileChanges && validationErrors.length > 0) {
+          console.log('No file changes but validation errors found, making empty commit');
+          await exec.exec('git', ['commit', '--allow-empty', '-m', '"Doctor validation errors"']);
+        } else {
+          console.log(`Committing changes to branch ${branch}`);
+          await exec.exec('git', ['commit', '-m', '"Doctor changes"']);
+        }
+        
         await exec.exec('git', ['push', 'origin', branch]);
-        const result = await octokit.rest.pulls.create({
+        const result = await configOctokit.rest.pulls.create({
           owner: github.context.repo.owner,
           repo: github.context.repo.repo,
           base: 'main',
           head: branch,
           title: 'Doctor - Configuration Update',
-          body: getPRBody(changes),
+          body: getPRBody(changes, validationErrors),
         });
         const prURL = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/pull/${result.data.number}`;
         console.log(`Created PR ${prURL}`);
