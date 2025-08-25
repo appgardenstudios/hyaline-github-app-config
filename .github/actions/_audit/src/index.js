@@ -7,6 +7,11 @@ const {DefaultArtifactClient} = require('@actions/artifact');
 
 const artifact = new DefaultArtifactClient();
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
+
+if (!configGitHubToken) {
+  throw new Error('HYALINE_CONFIG_GITHUB_TOKEN environment variable is required but not set');
+}
+
 const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
