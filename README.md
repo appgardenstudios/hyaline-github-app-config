@@ -4,7 +4,7 @@ Configuration for the Hyaline GitHub App
 ## Workflows
 
 ### [_audit.yml](.github/workflows/_audit.yml)
-Audits documentation against a specific configuration. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to audit against.
+Audits documentation against configured rules. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to audit against.
 
 **Usage:** Run manually via workflow dispatch to audit documentation quality against a configuration.
 
