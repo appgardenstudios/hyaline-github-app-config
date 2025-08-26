@@ -1,36 +1,5 @@
-llm:
-  provider: ${HYALINE_LLM_PROVIDER}
-  model: ${HYALINE_LLM_MODEL}
-  key: ${HYALINE_LLM_TOKEN}
-
-
-github:
-  token: ${HYALINE_GITHUB_TOKEN}
-
-
 extract:
-  source:
-    id: appgardenstudios.github.io
-    description: Documentation for Repository appgardenstudios/appgardenstudios.github.io
-  crawler:
-    type: git
-    options:
-      repo: https://github.com/appgardenstudios/appgardenstudios.github.io.git
-      branch: 269
-      clone: true
-      auth:
-        type: http
-        options:
-          username: git
-          password: ${HYALINE_GITHUB_TOKEN}
-    include:
-      - "**/*.md"
-    exclude:
-      - ".github/**/*"
-  extractors:
-    - type: md
-      include:
-        - "**/*.md"
+  disabled: true
 
 
 check:
