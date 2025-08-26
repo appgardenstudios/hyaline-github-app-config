@@ -449,8 +449,8 @@ async function doctor() {
       console.log(`${changes.length} potential changes detected, ${validationErrors.length} validation errors found`);
       const branch = `doctor-${Date.now()}`;
       
-      await exec.exec('git', ['config', 'user.name', '"github-actions[bot]"']);
-      await exec.exec('git', ['config', 'user.email', '"github-actions[bot]@users.noreply.github.com"']);
+      await exec.exec('git', ['config', 'user.name', '"Hyaline"']);
+      await exec.exec('git', ['config', 'user.email', '"hyaline-bot@users.noreply.github.com"']);
       await exec.exec('git', ['checkout', '-b', branch]);
       await exec.exec('git', ['add', '.']);
       
