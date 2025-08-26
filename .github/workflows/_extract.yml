@@ -41,4 +41,5 @@ jobs:
           trigger_merge: ${{ inputs.trigger_merge }}
           merge_workflow_ref: ${{ inputs.merge_workflow_ref || github.event.repository.default_branch }}
         env:
+          HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
