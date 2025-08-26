@@ -62,7 +62,7 @@ The workflow supports the following inputs (one of repo, site, or config is requ
 - `site` - (optional) The site name. Will use config at `./sites/{site}.yml`
 - `config` - (optional) The path to the hyaline configuration file relative to the root of the repository
 - `trigger_merge` - (required) Whether to trigger the merge workflow after extraction
-- `merge_workflow_ref` - (required) The branch or tag reference for the merge workflow (defaults to `main`)
+- `merge_workflow_ref` - (optional) The branch or tag reference for the merge workflow (defaults to default branch)
 
 **Artifacts produced:**
 - `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
@@ -77,9 +77,9 @@ Triggers extraction for all valid repositories and sites that have been configur
 **Inputs:**
 The workflow supports the following inputs:
 
-- `extract_workflow_ref` - (required) The branch or tag reference for the extract workflow (defaults to `main`)
+- `extract_workflow_ref` - (optional) The branch or tag reference for the extract workflow (defaults to default branch)
 - `trigger_merge` - (required) Whether to trigger the merge workflow after each extraction
-- `merge_workflow_ref` - (required) The branch or tag reference for the merge workflow (defaults to `main`)
+- `merge_workflow_ref` - (optional) The branch or tag reference for the merge workflow (defaults to default branch)
 
 **Artifacts produced:** None (triggers other workflows)
 
@@ -109,7 +109,7 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_ex
 **Inputs:**
 - `repo` - (required) Repository name (dropdown of available repos)
 - `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
-- `merge_workflow_ref` - (required) The branch or tag reference for the merge workflow (defaults to `main`)
+- `merge_workflow_ref` - (optional) The branch or tag reference for the merge workflow (defaults to default branch)
 
 **Artifacts produced:**
 - `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
@@ -122,7 +122,7 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_ex
 **Inputs:**
 - `site` - (required) Site name (dropdown of available sites)
 - `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
-- `merge_workflow_ref` - (required) The branch or tag reference for the merge workflow (defaults to `main`)
+- `merge_workflow_ref` - (optional) The branch or tag reference for the merge workflow (defaults to default branch)
 
 **Artifacts produced:**
 - `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
