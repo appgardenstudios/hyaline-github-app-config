@@ -1,0 +1,24 @@
+audit:
+  rules:
+    - id: "content-exists-check"
+      description: "Check that content exists and has a purpose"
+      documentation:
+        - source: "hyaline"
+          document: "README.md"
+      checks:
+        content:
+          exists: true
+          min-length: 100
+        purpose:
+          exists: true
+    - id: "another-content-exists-check"
+      description: "Check that another content exists and has a purpose"
+      documentation:
+        - source: "hyaline"
+          document: "bob.md"
+      checks:
+        content:
+          exists: true
+          min-length: 100
+        purpose:
+          exists: true
