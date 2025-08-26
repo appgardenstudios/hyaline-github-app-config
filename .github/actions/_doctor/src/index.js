@@ -10,14 +10,7 @@ const hyalineOctokit = github.getOctokit(hyalineGitHubToken);
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
 
-/**
- * Get the default branch from the GitHub context.
- *
- * @returns {string}
- */
-function getDefaultBranch() {
-  return github.context.payload.repository?.default_branch || 'main';
-}
+const configDefaultBranch = github.context.payload.repository?.default_branch || 'main';
 
 /**
  * Get the llm block of the hyaline config.
@@ -46,11 +39,12 @@ function getGitHub() {
 /**
  * Get the extract block of the hyaline config.
  * 
- * @param {string} owner 
- * @param {string} name 
+ * @param {string} owner
+ * @param {string} name
+ * @param {string} defaultBranch
  * @returns {string}
  */
-function getExtract(owner, name) {
+function getExtract(owner, name, defaultBranch) {
   return `extract:
   source:
     id: ${name}
@@ -59,7 +53,7 @@ function getExtract(owner, name) {
     type: git
     options:
       repo: https://github.com/${owner}/${name}.git
-      branch: main
+      branch: ${defaultBranch}
       clone: true
       auth:
         type: http
@@ -189,14 +183,15 @@ function getCheck(name, language) {
  * @param {string} owner 
  * @param {string} name 
  * @param {string | null | undefined} language 
+ * @param {string} defaultBranch
  * @returns {string}
  */
-function getConfig(owner, name, language) {
+function getConfig(owner, name, defaultBranch, language) {
   return `${getLLM()}
 
 ${getGitHub()}
 
-${getExtract(owner, name)}
+${getExtract(owner, name, defaultBranch)}
 
 ${getCheck(name, language)}
 `
@@ -246,7 +241,7 @@ on:
       merge_workflow_ref:
         description: 'Merge Workflow Ref (Branch or Tag)'
         type: string
-        default: ${getDefaultBranch()}
+        default: ${configDefaultBranch}
         required: true
 
 permissions: {}
@@ -423,7 +418,7 @@ async function doctor() {
       const filename = `.${path.sep}repos${path.sep}${repo.name}.yml`;
       if (!fs.existsSync(filename)) {
         console.log(`Creating ${filename}, language: ${repo.language}`);
-        fs.writeFileSync(filename, getConfig(owner, repo.name, repo.language));
+        fs.writeFileSync(filename, getConfig(owner, repo.name, repo.default_branch, repo.language));
         changes.push(`Generated a config for repo ${repo.name}`);
       }
     });
@@ -489,7 +484,7 @@ async function doctor() {
         const result = await configOctokit.rest.pulls.create({
           owner: github.context.repo.owner,
           repo: github.context.repo.repo,
-          base: getDefaultBranch(),
+          base: configDefaultBranch,
           head: branch,
           title: 'Doctor - Configuration Update',
           body: getPRBody(changes, validationErrors),
