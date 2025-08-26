@@ -1,50 +1,7 @@
-llm:
-  provider: ${HYALINE_LLM_PROVIDER}
-  model: ${HYALINE_LLM_MODEL}
-  key: ${HYALINE_LLM_TOKEN}
-
-
-github:
-  token: ${HYALINE_GITHUB_TOKEN}
-
-
 extract:
-  source:
-    id: slash-prompt
-    description: Documentation for Repository appgardenstudios/slash-prompt
-  crawler:
-    type: git
-    options:
-      repo: https://github.com/appgardenstudios/slash-prompt.git
-      branch: 269
-      clone: true
-      auth:
-        type: http
-        options:
-          username: git
-          password: ${HYALINE_GITHUB_TOKEN}
-    include:
-      - "**/*.md"
-    exclude:
-      - ".github/**/*"
-  extractors:
-    - type: md
-      include:
-        - "**/*.md"
+  disabled: true
 
 
 check:
-  code:
-    include:
-      - "**/*.go"
-      - "go.mod"
-    exclude:
-      - "**/*_test.go"
-  documentation:
-    include:
-      - source: "slash-prompt"
-        document: "**/*"
-  options:
-    detectDocumentationUpdates:
-      source: slash-prompt
+  disabled: true
 
