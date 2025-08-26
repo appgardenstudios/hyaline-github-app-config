@@ -9,6 +9,9 @@ github:
 
 
 extract:
+  source:
+    id: hyaline
+    description: Documentation for Repository appgardenstudios/hyaline
   crawler:
     type: git
     options:
