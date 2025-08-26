@@ -48,3 +48,13 @@ Configure the GitHub App to send events to the deployed app. Do the following:
 
 ### 5. Install GitHub App
 Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least the `hyaline-github-app-config` repo you forked so that the GitHub app can use the configuration you setup. Once installed you should see webhook calls being dispatched.
+
+## Running Locally
+To run the app locally you will need a working installed GitHub App (follow the instructions above to install).
+
+Once installed, do the following:
+
+1. Visit [smee.io](https://smee.io/) and start a new channel
+2. Run `SMEE_WEBHOOK_URL=<Webhook Proxy URL> npm run dev` to start the local development server
+3. Update the installed GitHub App's **Webhook > Webhook URL** to be `<Webhook Proxy URL>`
+4. Trigger a webhook by opening/updating a non-draft PR or merging a PR to the default branch. You will see logs in the console

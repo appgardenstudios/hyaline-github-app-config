@@ -8,13 +8,13 @@ let githubApp;
 let webhookInstance;
 
 // Get (and create if needed) the GitHub App
-function getGitHubApp(appId, privateKey, webhookSecret) {
+function getGitHubApp(appId, privateKey, webhooksSecret) {
   if (githubApp === undefined) {
     githubApp = new App({
       appId,
       privateKey,
       webhooks: {
-        secret: webhookSecret
+        secret: webhooksSecret
       }
     });
   }
@@ -22,10 +22,10 @@ function getGitHubApp(appId, privateKey, webhookSecret) {
 }
 
 // Get (and create if needed) the Webhook Instance
-function getWebhooksInstance(secret) {
+function getWebhooksInstance(webhooksSecret) {
   if (webhookInstance === undefined) {
     webhookInstance = new Webhooks({
-      secret: secret
+      secret: webhooksSecret
     });
   }
   return webhookInstance;
