@@ -6,8 +6,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "node dev.js"
   },
   "engines": {
     "node": "20"
@@ -20,8 +19,7 @@
   "devDependencies": {
     "@hono/node-server": "^1.19.0",
     "dotenv": "^17.2.1",
-    "smee-client": "^4.3.1",
-    "wrangler": "^4.31.0"
+    "smee-client": "^4.3.1"
   },
   "license": "MIT"
 }

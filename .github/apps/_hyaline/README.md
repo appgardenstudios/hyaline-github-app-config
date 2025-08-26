@@ -6,7 +6,7 @@ The GitHub App uses [Hono](https://hono.dev/), which is a batteries included Jav
 ## GitHub App Installation
 
 ### 1. Fork Config
-Fork the [appgardenstudios/hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into your org or personal account.
+Fork the [appgardenstudios/hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into your org or personal account. You will need to set this up as described in the main [README.md](../../../README.md).
 
 ### 2. Create GitHub App
 Sign in to GitHub and create a new GitHub App in your organization or personal account. It MUST be in the same location as the `hyaline-github-app-config` you forked above. You will need to supply/configure the following when creating the app:
@@ -33,7 +33,7 @@ Note that the endpoint will need to be reachable from GitHub's webhook servers (
 
 Once deployed save the following:
 
-- The `Webhook URL` (`https://<deployed hono app>/webhooks`)
+- The `Webhook URL` (`https://<deployed app domain>/webhooks`)
 - The `Webhook Secret` generated above
 
 ### 4. Configure GitHub App
@@ -47,3 +47,4 @@ Configure the GitHub App to send events to the deployed app. Do the following:
 - Check the **Subscribe to events > Pull request** option
 
 ### 5. Install GitHub App
+Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least the `hyaline-github-app-config` repo you forked so that the GitHub app can use the configuration you setup. Once installed you should see webhook calls being dispatched.

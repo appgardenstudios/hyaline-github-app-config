@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { env } from 'hono/adapter';
 import { App } from '@octokit/app';
 import { Webhooks } from '@octokit/webhooks';
 
@@ -7,13 +8,13 @@ let githubApp;
 let webhookInstance;
 
 // Get (and create if needed) the GitHub App
-function getGitHubApp(env) {
+function getGitHubApp(appId, privateKey, webhookSecret) {
   if (githubApp === undefined) {
     githubApp = new App({
-      appId: env.GITHUB_APP_ID,
-      privateKey: env.GITHUB_PRIVATE_KEY,
+      appId,
+      privateKey,
       webhooks: {
-        secret: env.WEBHOOK_SECRET
+        secret: webhookSecret
       }
     });
   }
@@ -109,13 +110,15 @@ async function handleCheckPrEvent(payload, githubApp, owner, repo) {
 
 // See if we need to dispatch _extract for this pull_request event
 async function handleExtractEvent(payload, githubApp, owner, repo) {
-  const { action, pull_request } = payload;
+  const { action, pull_request, repository } = payload;
 
-  // Check if this is a closed and merged PR
-  if (action !== 'closed' || !pull_request.merged) {
+  // Check if this is a closed and merged PR on the default branch
+  if (action !== 'closed' || !pull_request.merged || pull_request.base.ref !== repository.default_branch) {
     console.log('handleExtractEvent - ignoring', {
       action,
-      merged: pull_request.merged
+      merged: pull_request.merged,
+      baseRef: pull_request.base.ref,
+      defaultBranch: repository.default_branch,
     });
     return;
   }
@@ -162,16 +165,17 @@ app.post('/webhooks', async (c) => {
 
     // Validate required environment variables
     const requiredEnvVars = ['GITHUB_APP_ID', 'GITHUB_PRIVATE_KEY', 'WEBHOOK_SECRET'];
+    const envVars = env(c);
     for (const envVar of requiredEnvVars) {
-      if (!c.env?.[envVar]) {
+      if (!envVars[envVar]) {
         console.error(`Missing required environment variable: ${envVar}`);
         return c.json({ error: `Missing configuration: ${envVar}` }, 500);
       }
     }
 
     // Get GitHub App and Webhooks instances
-    const githubApp = getGitHubApp(c.env);
-    const webhooks = getWebhooksInstance(c.env.WEBHOOK_SECRET);
+    const githubApp = getGitHubApp(envVars['GITHUB_APP_ID'], envVars['GITHUB_PRIVATE_KEY'], envVars['WEBHOOK_SECRET']);
+    const webhooks = getWebhooksInstance(envVars['WEBHOOK_SECRET']);
 
     // Verify webhook signature
     const isValidSignature = await webhooks.verify(body, signature);
@@ -190,7 +194,7 @@ app.post('/webhooks', async (c) => {
     }
 
     const owner = payload.repository?.owner?.login;
-    const repo = c.env.HYALINE_CONFIG_REPO || 'hyaline-github-app-config';
+    const repo = envVars['HYALINE_CONFIG_REPO'] || 'hyaline-github-app-config';
 
     // Handle pull_request events
     if (eventType === 'pull_request') {

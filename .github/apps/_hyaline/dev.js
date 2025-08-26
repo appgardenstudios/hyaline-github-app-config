@@ -12,12 +12,12 @@ const server = serve(app);
 // Connect the smee client
 const smee = new SmeeClient({
   source: process.env.SMEE_WEBHOOK_URL || '',
-  target: 'http://localhost:3000/',
+  target: 'http://localhost:3000/webhooks',
   logger: console
 });
 const events = await smee.start()
 
-// graceful shutdown
+// Shutdown gracefully
 process.on('SIGINT', () => {
   events.close();
   server.close();
