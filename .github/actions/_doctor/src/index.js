@@ -11,6 +11,15 @@ const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
+ * Get the default branch from the GitHub context.
+ *
+ * @returns {string}
+ */
+function getDefaultBranch() {
+  return github.context.payload.repository.default_branch;
+}
+
+/**
  * Get the llm block of the hyaline config.
  *
  * @returns {string}
@@ -50,7 +59,7 @@ function getExtract(owner, name) {
     type: git
     options:
       repo: https://github.com/${owner}/${name}.git
-      branch: main
+      branch: ${getDefaultBranch()}
       clone: true
       auth:
         type: http
@@ -237,7 +246,7 @@ on:
       merge_workflow_ref:
         description: 'Merge Workflow Ref (Branch or Tag)'
         type: string
-        default: main
+        default: ${getDefaultBranch()}
         required: true
 
 jobs:
@@ -472,7 +481,7 @@ async function doctor() {
         const result = await configOctokit.rest.pulls.create({
           owner: github.context.repo.owner,
           repo: github.context.repo.repo,
-          base: 'main',
+          base: getDefaultBranch(),
           head: branch,
           title: 'Doctor - Configuration Update',
           body: getPRBody(changes, validationErrors),
