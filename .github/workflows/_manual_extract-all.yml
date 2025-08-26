@@ -4,19 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       extract_workflow_ref:
-        description: 'Extract Workflow Ref (Branch or Tag)'
+        description: 'Extract Workflow Ref (Branch or Tag). Defaults to default branch.'
         type: string
-        default: main
-        required: true
       trigger_merge:
         description: 'Trigger Merge Workflow'
         type: boolean
         default: true
       merge_workflow_ref:
-        description: 'Merge Workflow Ref (Branch or Tag)'
+        description: 'Merge Workflow Ref (Branch or Tag). Defaults to default branch.'
         type: string
-        default: main
-        required: true
 
 permissions: {}
 
@@ -33,8 +29,8 @@ jobs:
       - name: Extract All
         uses: ./.github/actions/_manual_extract-all
         with:
-          extract_workflow_ref: ${{ inputs.extract_workflow_ref }}
+          extract_workflow_ref: ${{ inputs.extract_workflow_ref || github.event.repository.default_branch }}
           trigger_merge: ${{ inputs.trigger_merge }}
-          merge_workflow_ref: ${{ inputs.merge_workflow_ref }}
+          merge_workflow_ref: ${{ inputs.merge_workflow_ref || github.event.repository.default_branch }}
         env:
           HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}

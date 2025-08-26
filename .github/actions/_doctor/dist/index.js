@@ -31846,8 +31846,6 @@ const hyalineOctokit = github.getOctokit(hyalineGitHubToken);
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
 
-const configDefaultBranch = github.context.payload.repository?.default_branch || 'main';
-
 /**
  * Get the llm block of the hyaline config.
  *
@@ -32075,10 +32073,8 @@ on:
         type: boolean
         default: true
       merge_workflow_ref:
-        description: 'Merge Workflow Ref (Branch or Tag)'
+        description: 'Merge Workflow Ref (Branch or Tag). Defaults to default branch.'
         type: string
-        default: ${configDefaultBranch}
-        required: true
 
 permissions: {}
 
@@ -32097,7 +32093,7 @@ jobs:
         with:
           ${type}: \${{ inputs.${type} }}
           trigger_merge: \${{ inputs.trigger_merge }}
-          merge_workflow_ref: \${{ inputs.merge_workflow_ref }}
+          merge_workflow_ref: \${{ inputs.merge_workflow_ref || github.event.repository.default_branch }}
         env:
           HYALINE_GITHUB_TOKEN: \${{ secrets.HYALINE_GITHUB_TOKEN }}
 `;
@@ -32320,7 +32316,7 @@ async function doctor() {
         const result = await configOctokit.rest.pulls.create({
           owner: github.context.repo.owner,
           repo: github.context.repo.repo,
-          base: configDefaultBranch,
+          base: github.context.payload.repository?.default_branch || 'main',
           head: branch,
           title: 'Doctor - Configuration Update',
           body: getPRBody(changes, validationErrors),
