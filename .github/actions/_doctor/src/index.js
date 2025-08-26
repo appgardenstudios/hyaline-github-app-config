@@ -16,7 +16,7 @@ const configOctokit = github.getOctokit(configGitHubToken);
  * @returns {string}
  */
 function getDefaultBranch() {
-  return github.context.payload.repository.default_branch;
+  return github.context.payload.repository?.default_branch || 'main';
 }
 
 /**
@@ -59,7 +59,7 @@ function getExtract(owner, name) {
     type: git
     options:
       repo: https://github.com/${owner}/${name}.git
-      branch: ${getDefaultBranch()}
+      branch: main
       clone: true
       auth:
         type: http
