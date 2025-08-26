@@ -249,12 +249,16 @@ on:
         default: ${getDefaultBranch()}
         required: true
 
+permissions: {}
+
 jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: \${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
       - name: Setup Hyaline CLI
         uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Extract
@@ -290,12 +294,16 @@ on:
         description: 'Sources (Comma Separated)'
         type: string
 
+permissions: {}
+
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: \${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
       - name: Setup Hyaline CLI
         uses: appgardenstudios/hyaline-actions/setup@v1
       - name: Audit
@@ -304,7 +312,7 @@ jobs:
           audit: \${{ inputs.audit }}
           sources: \${{ inputs.sources }}
         env:
-          HYALINE_GITHUB_TOKEN: \${{ secrets.HYALINE_GITHUB_TOKEN }}
+          HYALINE_CONFIG_GITHUB_TOKEN: \${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
           HYALINE_LLM_PROVIDER: \${{ vars.HYALINE_LLM_PROVIDER }}
           HYALINE_LLM_MODEL: \${{ vars.HYALINE_LLM_MODEL }}
           HYALINE_LLM_TOKEN: \${{ secrets.HYALINE_LLM_TOKEN }}`;
