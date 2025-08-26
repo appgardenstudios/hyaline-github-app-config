@@ -42,7 +42,7 @@ The workflow supports the following inputs:
 ### [_doctor.yml](.github/workflows/_doctor.yml)
 Maintains the configuration repository by discovering repositories, generating configurations, validating existing configs, and creating pull requests with updates.
 
-**Usage:** Run manually via workflow dispatch to keep the repository up to date. No prerequisites required.
+**Usage:** Run manually via workflow dispatch to keep the repository up to date.
 
 **Inputs:** None
 
@@ -53,7 +53,7 @@ Maintains the configuration repository by discovering repositories, generating c
 ### [_extract.yml](.github/workflows/_extract.yml)
 Extracts documentation from a repository or site.
 
-**Usage:** Run automatically by the Hyaline GitHub App when a PR is merged into the default branch. Can also be run manually via workflow dispatch. No prerequisites required. Can optionally trigger the merge workflow after extraction.
+**Usage:** Run automatically by the Hyaline GitHub App when a PR is merged into the default branch. Can also be run manually via workflow dispatch. Can optionally trigger the merge workflow after extraction.
 
 **Inputs:**
 The workflow supports the following inputs (one of repo, site, or config is required):
@@ -61,7 +61,7 @@ The workflow supports the following inputs (one of repo, site, or config is requ
 - `repo` - (optional) The repository name. Will use config at `./repos/{repo}.yml`
 - `site` - (optional) The site name. Will use config at `./sites/{site}.yml`
 - `config` - (optional) The path to the hyaline configuration file relative to the root of the repository
-- `trigger_merge` - (required) Whether to trigger the merge workflow after extraction
+- `trigger_merge` - (required) Whether to trigger the merge workflow after extraction (defaults to true)
 - `merge_workflow_ref` - (optional) The branch or tag reference for the merge workflow (defaults to default branch)
 
 **Artifacts produced:**
@@ -72,7 +72,7 @@ The workflow supports the following inputs (one of repo, site, or config is requ
 ### [_manual_extract-all.yml](.github/workflows/_manual_extract-all.yml)
 Triggers extraction for all valid repositories and sites that have been configured.
 
-**Usage:** Run manually via workflow dispatch to extract documentation from all configured sources. No prerequisites required.
+**Usage:** Run manually via workflow dispatch to extract documentation from all configured sources.
 
 **Inputs:**
 The workflow supports the following inputs:
@@ -102,7 +102,7 @@ Merges new extracted documentation databases into the current documentation data
 The following workflows are automatically generated and maintained by the Doctor workflow based on the configurations found in the repository:
 
 ### Manual - Extract Repo
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_repo.yml` based on configurations in the `repos/` directory. Provides a dropdown interface to select and extract documentation from specific repositories.
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_repo.yml` based on configurations in the `repos/` directory. Provides a dropdown interface to select and extract documentation from a specific repository.
 
 **Usage:** Run manually via workflow dispatch to extract documentation from a specific repository. The dropdown options are automatically updated by the Doctor workflow.
 
@@ -115,7 +115,7 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_ex
 - `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
 
 ### Manual - Extract Site
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_site.yml` based on configurations in the `sites/` directory. Provides a dropdown interface to select and extract documentation from specific sites.
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_site.yml` based on configurations in the `sites/` directory. Provides a dropdown interface to select and extract documentation from a specific site.
 
 **Usage:** Run manually via workflow dispatch to extract documentation from a specific site. The dropdown options are automatically updated by the Doctor workflow.
 
@@ -128,7 +128,7 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_ex
 - `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
 
 ### Manual - Run Audit
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_audit.yml` based on configurations in the `audits/` directory. Provides a dropdown interface to select and run specific audits.
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_audit.yml` based on configurations in the `audits/` directory. Provides a dropdown interface to select and run a specific audit.
 
 **Usage:** Run manually via workflow dispatch to run a specific audit. The dropdown options are automatically updated by the Doctor workflow.
 
