@@ -121,10 +121,7 @@ async function audit() {
     const passedRules = auditResults.results.filter(result => result.pass).length;
     
     await core.summary
-      .addHeading('Audit Results')
-      .addBreak()
-      .addRaw(`Summary: ${passedRules} of ${totalRules} rules passed`, true)
-      .addBreak()
+      .addHeading(`Audit Results - ${Math.round(passedRules/totalRules * 100)}% passed`)
       .addTable([
         [{data: 'Rule', header: true}, {data: 'Result', header: true}],
         ...auditResults.results.map(result => [
