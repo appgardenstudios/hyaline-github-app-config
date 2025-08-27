@@ -120,12 +120,17 @@ async function audit() {
     const totalRules = auditResults.results.length;
     const passedRules = auditResults.results.filter(result => result.pass).length;
     
-    console.log(`\n${passedRules}/${totalRules} Rules Passed\n`);
-    
-    auditResults.results.forEach(result => {
-      const status = result.pass ? 'Pass' : 'Fail';
-      console.log(`- ${result.rule}: ${status}`);
-    });
+    await core.summary
+      .addHeading('Audit Results')
+      .addRaw(`Summary: ${passedRules}/${totalRules}`)
+      .addTable([
+        [{data: 'Rule', header: true}, {data: 'Result', header: true}],
+        ...auditResults.results.map(result => [
+          result.rule,
+          result.pass ? 'Pass ✅' : 'Fail ❌'
+        ])
+      ])
+      .write();
   } catch(error) {
     core.error(error);
     throw error;
