@@ -22,11 +22,16 @@ Once created do the following:
 - Retrieve the `App ID` for later use
 - Generate a `Private Key` and save it for later use
 
+> [!IMPORTANT]  
+> When you generate a private key, it will be in PKCS#1 format, but GitHub's `@octokit/app` expects PKCS#8. You will need to convert the file from PKCS#1 to PKCS#8. This can be done by running the following command to generate a PKCS#8 file:
+>
+> `openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in ./private-key.pem -out private-key-pkcs8.key`
+
 ### 3. Deploy GitHub App
 Choose your desired platform and configure hono to deploy it. You will need to ensure the following environment variables are available to the running application:
 
-- **GITHUB_APP_ID** - The `App ID` from Step 1 above.
-- **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 1 above.
+- **GITHUB_APP_ID** - The `App ID` from Step 2 above.
+- **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 2 above.
 - **WEBHOOK_SECRET** - A string used to verify that the caller is indeed GitHub. We recommend using a new UUIDv4.
 - **HYALINE_CONFIG_REPO** - (Optional) The name of the forked configuration repository. If not set `hyaline-github-app-config` will be used.
 
