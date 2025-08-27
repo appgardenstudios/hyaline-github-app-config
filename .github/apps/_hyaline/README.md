@@ -9,7 +9,7 @@ The GitHub App uses [Hono](https://hono.dev/), which is a batteries included Jav
 Fork the [appgardenstudios/hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into your org or personal account. You will need to set this up as described in the main [README.md](../../../README.md).
 
 ### 2. Create GitHub App
-Sign in to GitHub and create a new GitHub App in your organization or personal account. It MUST be in the same location as the `hyaline-github-app-config` you forked above. You will need to supply/configure the following when creating the app:
+Sign in to GitHub and create a new GitHub App in your organization or personal account. It MUST belong to the same account as the `hyaline-github-app-config` repository you forked above. You will need to supply/configure the following when creating the app:
 
 - **GitHub App name** - Choose a valid name for this app (e.g. `hyaline-github-app-<my-org>`)
 - **Homepage URL** - Use your own website or the URL for your forked configuration repo from Step 0
@@ -28,6 +28,7 @@ Choose your desired platform and configure hono to deploy it. You will need to e
 - **GITHUB_APP_ID** - The `App ID` from Step 1 above.
 - **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 1 above.
 - **WEBHOOK_SECRET** - A string used to verify that the caller is indeed GitHub. We recommend using a new UUIDv4.
+- **HYALINE_CONFIG_REPO** - (Optional) The name of the forked configuration repository. If not set `hyaline-github-app-config` will be used.
 
 Note that the endpoint will need to be reachable from GitHub's webhook servers (hooks in [GitHub's meta API endpoint](https://api.github.com/meta)).
 
@@ -40,14 +41,14 @@ Once deployed save the following:
 Configure the GitHub App to send events to the deployed app. Do the following:
 
 - Check the **Webhook > Active** option
-- Set **Webhook > Webhook URL** to `Webhook URL` from Step 4 above
-- Set **Webhook > Secret** to `Webhook Secret` from Step 4 above
+- Set **Webhook > Webhook URL** to `Webhook URL` from Step 3 above
+- Set **Webhook > Secret** to `Webhook Secret` from Step 3 above
 - Set **Repository permissions > Actions** to be `Read and write`
 - Set **Repository permissions > Pull requests** to be `Read-only`
 - Check the **Subscribe to events > Pull request** option
 
 ### 5. Install GitHub App
-Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least the `hyaline-github-app-config` repo you forked so that the GitHub app can use the configuration you setup. Once installed you should see webhook calls being dispatched.
+Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least the `hyaline-github-app-config` repo you forked so that the GitHub app can use the configuration you set up. Once installed you should see webhook calls being dispatched.
 
 ## Running Locally
 To run the app locally you will need a working installed GitHub App (follow the instructions above to install).
