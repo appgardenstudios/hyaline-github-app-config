@@ -138,3 +138,10 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_au
 
 **Artifacts produced:**
 - `audit-results` - Contains `audit-results.json` with the audit results
+
+## Apps
+
+### [Hyaline GitHub App](.github/apps/_hyaline/)
+The Hyaline GitHub App listens to Pull Request webhook events from configured repositories and triggers [Internal - Check PR](./.github/workflows/_check-pr.yml) and [Internal - Extract](./.github/workflows/_extract.yml) workflows in the forked configuration repository.
+
+Note that it is only necessary to deploy and use this app if you are unable to use the public Hyaline GitHub App available on GitHub.
