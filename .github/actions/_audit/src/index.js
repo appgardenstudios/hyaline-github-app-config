@@ -123,7 +123,7 @@ async function audit() {
     await core.summary
       .addHeading('Audit Results')
       .addBreak()
-      .addRaw(`**${passedRules} of ${totalRules} rules passed**`)
+      .addRaw(`Summary: ${passedRules} of ${totalRules} rules passed`, true)
       .addBreak()
       .addTable([
         [{data: 'Rule', header: true}, {data: 'Result', header: true}],
