@@ -1,0 +1,41 @@
+name: Internal - Check PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'Repository Name'
+        type: string
+        required: true
+      pr_number:
+        description: 'PR Number'
+        type: number
+        required: true
+      config:
+        description: 'Configuration Path'
+        type: string
+
+permissions: {}
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
+      - name: Setup Hyaline CLI
+        uses: appgardenstudios/hyaline-actions/setup@v1
+      - name: Check PR
+        uses: ./.github/actions/_check-pr
+        with:
+          repo: ${{ inputs.repo }}
+          pr_number: ${{ inputs.pr_number }}
+          config: ${{ inputs.config }}
+        env:
+          HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
+          HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
+          HYALINE_LLM_PROVIDER: ${{ vars.HYALINE_LLM_PROVIDER }}
+          HYALINE_LLM_MODEL: ${{ vars.HYALINE_LLM_MODEL }}
+          HYALINE_LLM_TOKEN: ${{ secrets.HYALINE_LLM_TOKEN }}

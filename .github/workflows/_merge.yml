@@ -1,0 +1,25 @@
+name: Internal - Merge
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: _merge
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
+      - name: Setup Hyaline CLI
+        uses: appgardenstudios/hyaline-actions/setup@v1
+      - name: Merge
+        uses: ./.github/actions/_merge
+        env:
+          HYALINE_CONFIG_GITHUB_TOKEN: ${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
