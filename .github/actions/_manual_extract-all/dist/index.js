@@ -31857,7 +31857,7 @@ async function shouldExtract(configPath) {
     return false;
   }
   
-  const outputPath = `./validation-${filename}.json`;
+  const outputPath = path.join('.', `validation-${filename}.json`);
   
   try {
     await exec.exec('hyaline', ['validate', 'config', '--config', configPath, '--output', outputPath]);

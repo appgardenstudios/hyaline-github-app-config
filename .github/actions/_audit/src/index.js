@@ -95,7 +95,7 @@ async function audit() {
       'audit', 'documentation',
       '--config', configPath,
       '--documentation', documentationPath,
-      '--output', './audit-results.json',
+      '--output', path.join('.', 'audit-results.json'),
     ];
     if (sources) {
       const sourceArgs = [];
@@ -111,12 +111,12 @@ async function audit() {
     console.log('Uploading audit-results');
     await artifact.uploadArtifact('audit-results', [
       'audit-results.json',
-    ], './');
+    ], '.');
 
     console.log('Audit Complete');
 
     // Display audit results summary
-    const auditResults = JSON.parse(fs.readFileSync('./audit-results.json', 'utf8'));
+    const auditResults = JSON.parse(fs.readFileSync(path.join('.', 'audit-results.json'), 'utf8'));
     const totalRules = auditResults.results.length;
     const passedRules = auditResults.results.filter(result => result.pass).length;
     

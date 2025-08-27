@@ -171,7 +171,7 @@ async function getDocumentation(checkpoint) {
  * @returns {Promise<string>} The path to the new current DB
  */
 async function mergeDocumentation(paths) {
-  let newCurrentDB = './documentation.db';
+  let newCurrentDB = path.join('.', 'documentation.db');
 
   // Format input path pairs
   const inputs = [];
@@ -202,15 +202,15 @@ async function uploadArtifact(currentDB, checkpoint) {
   console.log('uploadArtifact', currentDB, checkpoint);
 
   // Move path to be correct if it is not so that the zip file is consistent
-  if (currentDB != './documentation.db') {
-    await io.mv(currentDB, './documentation.db');
+  if (currentDB != path.join('.', 'documentation.db')) {
+    await io.mv(currentDB, path.join('.', 'documentation.db'));
   }
 
   // Write out checkpoint
-  fs.writeFileSync('./checkpoint', checkpoint);
+  fs.writeFileSync(path.join('.', 'checkpoint'), checkpoint);
 
   // Upload artifact
-  await artifact.uploadArtifact(MERGE_ARTIFACT_NAME, ['documentation.db', 'checkpoint'], './');
+  await artifact.uploadArtifact(MERGE_ARTIFACT_NAME, ['documentation.db', 'checkpoint'], '.');
 }
 
 async function merge() {

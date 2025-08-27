@@ -60,7 +60,7 @@ async function checkPR() {
     if (config) {
       configPath = config;
     } else if (repo) {
-      configPath = `./repos/${repo}.yml`;
+      configPath = path.join('.', 'repos', `${repo}.yml`);
     } else {
       throw new Error('either repo or config must be set');
     }
@@ -96,9 +96,9 @@ async function checkPR() {
       '--config', configPath,
       '--documentation', documentationPath,
       '--pull-request', `${github.context.repo.owner}/${repo}/${pr_number}`,
-      '--output', './recommendations.json',
-      '--output-current', './current-recommendations.json',
-      '--output-previous', './previous-recommendations.json',
+      '--output', path.join('.', 'recommendations.json'),
+      '--output-current', path.join('.', 'current-recommendations.json'),
+      '--output-previous', path.join('.', 'previous-recommendations.json'),
     ];
     if (core.isDebug()) {
       args.unshift('--debug');
@@ -110,7 +110,7 @@ async function checkPR() {
       'recommendations.json',
       'current-recommendations.json',
       'previous-recommendations.json',
-    ], './');
+    ], '.');
 
     console.log('Check PR Complete');
 

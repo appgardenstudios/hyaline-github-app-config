@@ -1,3 +1,4 @@
+const path = require('path');
 const core = require('@actions/core');
 const exec = require('@actions/exec');
 const github = require('@actions/github');
@@ -21,9 +22,9 @@ async function extract() {
     // Get config path
     let configPath;
     if (repo) {
-      configPath = `./repos/${repo}.yml`;
+      configPath = path.join('.', 'repos', `${repo}.yml`);
     } else if (site) {
-      configPath = `./sites/${site}.yml`;
+      configPath = path.join('.', 'sites', `${site}.yml`);
     } else if (config) {
       configPath = config;
     } else {
@@ -39,7 +40,7 @@ async function extract() {
     let args = [
       'extract', 'documentation',
       '--config', configPath,
-      '--output', './documentation.db',
+      '--output', path.join('.', 'documentation.db'),
     ];
     if (core.isDebug()) {
       args.unshift('--debug');
@@ -48,7 +49,7 @@ async function extract() {
 
     // Upload artifact
     console.log('Uploading _extracted-documentation');
-    await artifact.uploadArtifact('_extracted-documentation',['documentation.db'], './');
+    await artifact.uploadArtifact('_extracted-documentation',['documentation.db'], '.');
 
     // Trigger merge if asked to
     // We do this here instead of in the calling workflow because only 1 _merge can be

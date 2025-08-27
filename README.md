@@ -3,7 +3,7 @@ Configuration for the Hyaline GitHub App
 
 ## Workflows
 
-### [_audit.yml](.github/workflows/_audit.yml)
+### [Internal - Audit](.github/workflows/_audit.yml)
 Audits documentation against configured rules. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to audit against.
 
 **Usage:** Run manually via workflow dispatch to audit documentation quality against a configuration.
@@ -22,7 +22,7 @@ The workflow supports the following inputs (one of audit, repo, site, or config 
 
 **More info:** See [_audit action](.github/actions/_audit)
 
-### [_check-pr.yml](.github/workflows/_check-pr.yml)
+### [Internal - Check PR](.github/workflows/_check-pr.yml)
 Checks a pull request for documentation updates. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to check against.
 
 **Usage:** Run automatically by the Hyaline GitHub App when a PR is ready for review and changes are made to the PR. Can also be run manually via workflow dispatch.
@@ -39,7 +39,7 @@ The workflow supports the following inputs:
 
 **More info:** See [_check-pr action](.github/actions/_check-pr)
 
-### [_doctor.yml](.github/workflows/_doctor.yml)
+### [Doctor](.github/workflows/_doctor.yml)
 Maintains the configuration repository by discovering repositories, generating configurations, validating existing configs, and creating pull requests with updates.
 
 **Usage:** Run manually via workflow dispatch to keep the repository up to date.
@@ -50,7 +50,7 @@ Maintains the configuration repository by discovering repositories, generating c
 
 **More info:** See [_doctor action](.github/actions/_doctor)
 
-### [_extract.yml](.github/workflows/_extract.yml)
+### [Internal - Extract](.github/workflows/_extract.yml)
 Extracts documentation from a repository or site.
 
 **Usage:** Run automatically by the Hyaline GitHub App when a PR is merged into the default branch. Can also be run manually via workflow dispatch. Can optionally trigger the merge workflow after extraction.
@@ -69,7 +69,7 @@ The workflow supports the following inputs (one of repo, site, or config is requ
 
 **More info:** See [_extract action](.github/actions/_extract)
 
-### [_manual_extract-all.yml](.github/workflows/_manual_extract-all.yml)
+### [Manual - Extract All](.github/workflows/_manual_extract-all.yml)
 Triggers extraction for all valid repositories and sites that have been configured.
 
 **Usage:** Run manually via workflow dispatch to extract documentation from all configured sources.
@@ -85,7 +85,7 @@ The workflow supports the following inputs:
 
 **More info:** See [_manual_extract-all action](.github/actions/_manual_extract-all)
 
-### [_merge.yml](.github/workflows/_merge.yml)
+### [Internal - Merge](.github/workflows/_merge.yml)
 Merges new extracted documentation databases into the current documentation dataset. Uses concurrency control to ensure only one merge runs at a time.
 
 **Usage:** Run manually via workflow dispatch or triggered automatically by extract actions. Works with any available `_extracted-documentation` artifacts.

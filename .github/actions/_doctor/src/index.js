@@ -326,8 +326,8 @@ async function validateConfigs(directory) {
   const configFiles = fs.readdirSync(directory).filter(file => file.endsWith('.yml'));
   
   for (const configFile of configFiles) {
-    const configPath = `./${directory}/${configFile}`;
-    const outputPath = `./validation-${configFile}.json`;
+    const configPath = path.join('.', directory, configFile);
+    const outputPath = path.join('.', `validation-${configFile}.json`);
     
     try {
       await exec.exec('hyaline', ['validate', 'config', '--config', configPath, '--output', outputPath]);

@@ -4,6 +4,7 @@ The `_doctor` action is a JavaScript action that maintains and validates the Hya
 This action performs the following tasks:
 - Validates environment variables and secrets are properly set
 - Discovers repositories accessible to the GitHub token and generates configurations for new ones
+  - Note: Because of how GitHub personal access tokens work, all public repositories in the organization or personal account will be included in addition to the repositories the token has explicitly been given access to.
 - Creates or updates manual workflow files for extracting and auditing
 - Validates all existing configuration files using `hyaline validate config`
 - Creates a pull request with any changes or validation errors found
