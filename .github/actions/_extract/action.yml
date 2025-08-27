@@ -1,0 +1,22 @@
+name: 'Action - Extract'
+description: 'Extract'
+inputs:
+  repo:
+    description: 'Repository Name'
+    required: false
+  site:
+    description: 'Site Name'
+    required: false
+  config:
+    description: 'Configuration Path'
+    required: false
+  trigger_merge:
+    description: 'Trigger Merge Workflow'
+    required: true
+  merge_workflow_ref:
+    description: 'Merge Workflow Ref (Branch or Tag)'
+    default: main
+    required: true
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

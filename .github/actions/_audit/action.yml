@@ -1,0 +1,21 @@
+name: 'Action - Audit'
+description: 'Audit'
+inputs:
+  audit:
+    description: 'Audit Name'
+    required: false
+  repo:
+    description: 'Repository Name'
+    required: false
+  site:
+    description: 'Site Name'
+    required: false
+  config:
+    description: 'Configuration Path'
+    required: false
+  sources:
+    description: 'Sources (Comma Separated)'
+    required: false
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

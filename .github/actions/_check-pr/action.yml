@@ -1,0 +1,15 @@
+name: 'Action - Check PR'
+description: 'Check PR'
+inputs:
+  repo:
+    description: 'Repository Name'
+    required: true
+  pr_number:
+    description: 'PR Number'
+    required: true
+  config:
+    description: 'Configuration Path'
+    required: false
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
