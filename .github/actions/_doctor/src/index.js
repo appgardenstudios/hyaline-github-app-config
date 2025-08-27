@@ -39,13 +39,14 @@ function getGitHub() {
  * 
  * @param {string} owner
  * @param {string} name
+ * @param {string} sourceId
  * @param {string} defaultBranch
  * @returns {string}
  */
-function getExtract(owner, name, defaultBranch) {
+function getExtract(owner, name, sourceId, defaultBranch) {
   return `extract:
   source:
-    id: ${name}
+    id: ${sourceId}
     description: Documentation for Repository ${owner}/${name}
   crawler:
     type: git
@@ -74,10 +75,11 @@ function getExtract(owner, name, defaultBranch) {
  * Note that we return blank if we can't map the language.
  *
  * @param {string} name 
+ * @param {string} sourceId
  * @param {string | null | undefined} language 
  * @returns {string}
  */
-function getCheck(name, language) {
+function getCheck(name, sourceId, language) {
   let include, exclude;
 
   // Map language to include/exclude statements
@@ -167,11 +169,11 @@ function getCheck(name, language) {
       - "${exclude.join('"\n      - "')}"
   documentation:
     include:
-      - source: "${name}"
+      - source: "${sourceId}"
         document: "**/*"
   options:
     detectDocumentationUpdates:
-      source: ${name}
+      source: ${sourceId}
 `
 }
 
@@ -185,14 +187,40 @@ function getCheck(name, language) {
  * @returns {string}
  */
 function getConfig(owner, name, defaultBranch, language) {
+  const sourceId = getRepoSourceId(name);
+
   return `${getLLM()}
 
 ${getGitHub()}
 
-${getExtract(owner, name, defaultBranch)}
+${getExtract(owner, name, sourceId, defaultBranch)}
 
-${getCheck(name, language)}
+${getCheck(name, sourceId, language)}
 `
+}
+
+/**
+ * Get a source ID for a repository name by replacing invalid characters with underscores.
+ * Valid source IDs match /^[A-z0-9][A-z0-9_-]{0,63}$/
+ *
+ * @param {string} name - The repository name
+ * @returns {string} - The source ID
+ */
+function getRepoSourceId(name) {
+  // Replace invalid characters with underscore
+  let safeName = name.replace(/[^A-Za-z0-9_-]/g, '_');
+  
+  // Remove invalid first characters
+  while (safeName.length > 0 && !/^[A-Za-z0-9]/.test(safeName.charAt(0))) {
+    safeName = safeName.substring(1);
+  }
+  
+  // Truncate to 64 characters
+  if (safeName.length > 64) {
+    safeName = safeName.substring(0, 64);
+  }
+  
+  return safeName;
 }
 
 /**
