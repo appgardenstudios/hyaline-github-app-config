@@ -25,8 +25,8 @@ Once created do the following:
 ### 3. Deploy GitHub App
 Choose your desired platform and configure hono to deploy it. You will need to ensure the following environment variables are available to the running application:
 
-- **GITHUB_APP_ID** - The `App ID` from Step 1 above.
-- **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 1 above.
+- **GITHUB_APP_ID** - The `App ID` from Step 2 above.
+- **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 2 above.
 - **WEBHOOK_SECRET** - A string used to verify that the caller is indeed GitHub. We recommend using a new UUIDv4.
 - **HYALINE_CONFIG_REPO** - (Optional) The name of the forked configuration repository. If not set `hyaline-github-app-config` will be used.
 
