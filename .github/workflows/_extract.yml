@@ -1,4 +1,4 @@
-name: Internal - Extract
+name: _Extract
 
 on:
   workflow_dispatch:

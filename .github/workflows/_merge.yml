@@ -1,4 +1,4 @@
-name: Internal - Merge
+name: _Merge
 
 on:
   workflow_dispatch:

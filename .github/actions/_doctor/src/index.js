@@ -249,7 +249,7 @@ function getConfigNames(paths) {
  */
 function getExtractWrapper(type, options) {
   const name = type.charAt(0).toUpperCase() + type.slice(1)
-  return `name: Manual - Extract ${name}
+  return `name: Extract ${name}
 
 on:
   workflow_dispatch:
@@ -264,9 +264,6 @@ on:
         description: 'Trigger Merge Workflow'
         type: boolean
         default: true
-      merge_workflow_ref:
-        description: 'Merge Workflow Ref (Branch or Tag). Defaults to default branch.'
-        type: string
 
 permissions: {}
 
@@ -285,7 +282,7 @@ jobs:
         with:
           ${type}: \${{ inputs.${type} }}
           trigger_merge: \${{ inputs.trigger_merge }}
-          merge_workflow_ref: \${{ inputs.merge_workflow_ref || github.event.repository.default_branch }}
+          merge_workflow_ref: \${{ github.event.repository.default_branch }}
         env:
           HYALINE_GITHUB_TOKEN: \${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_CONFIG_GITHUB_TOKEN: \${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
@@ -299,7 +296,7 @@ jobs:
  * @returns {string}
  */
 function getAuditWrapper(options) {
-  return `name: Manual - Run Audit
+  return `name: Run Audit
 
 on:
   workflow_dispatch:
@@ -454,7 +451,7 @@ async function doctor() {
     if (repoNames.length > 0) {
       const workflow = `.${path.sep}.github${path.sep}workflows${path.sep}_manual_extract_repo.yml`;
       fs.writeFileSync(workflow, getExtractWrapper('repo', repoNames));
-      changes.push('Ensure the Manual - Extract Repo workflow is up-to-date');
+      changes.push('Ensure the Extract Repo workflow is up-to-date');
     }
 
     // Create Site Wrappers
@@ -463,7 +460,7 @@ async function doctor() {
     if (siteNames.length > 0) {
       const workflow = `.${path.sep}.github${path.sep}workflows${path.sep}_manual_extract_site.yml`;
       fs.writeFileSync(workflow, getExtractWrapper('site', siteNames));
-      changes.push('Ensure the Manual - Extract Site workflow is up-to-date');
+      changes.push('Ensure the Extract Site workflow is up-to-date');
     }
 
     // Create Audit Wrappers
@@ -472,7 +469,7 @@ async function doctor() {
     if (auditNames.length > 0) {
       const workflow = `.${path.sep}.github${path.sep}workflows${path.sep}_manual_audit.yml`;
       fs.writeFileSync(workflow, getAuditWrapper(auditNames));
-      changes.push('Ensure the Manual - Run Audit workflow is up-to-date');
+      changes.push('Ensure the Run Audit workflow is up-to-date');
     }
 
     // Validate config files
