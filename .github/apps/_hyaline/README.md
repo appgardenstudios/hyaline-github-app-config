@@ -1,5 +1,5 @@
 # Hyaline GitHub App
-The Hyaline GitHub App listens to Pull Request webhook events from configured repositories and triggers [Internal - Check PR](../../workflows/_check-pr.yml) and [Internal - Extract](../../workflows/_extract.yml) workflows in the forked configuration repository.
+The Hyaline GitHub App listens to Pull Request webhook events from configured repositories and triggers [_Check PR](../../workflows/_check-pr.yml) and [_Extract](../../workflows/_extract.yml) workflows in the forked configuration repository.
 
 The GitHub App uses [Hono](https://hono.dev/), which is a batteries included JavaScript runtime that can be deployed to a variety of [platforms](https://hono.dev/docs/getting-started/basic).
 
