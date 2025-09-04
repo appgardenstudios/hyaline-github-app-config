@@ -1,8 +1,76 @@
 # hyaline-github-app-config
 Configuration for the Hyaline GitHub App
 
-## Workflows
-The following workflows are available. Note that workflows starting with `_` are for internal use only.
+## Available Workflows
+The following workflows are available.
+
+### [Doctor](.github/workflows/_doctor.yml)
+Maintains the configuration repository by discovering repositories, generating configurations, validating existing configs, and creating pull requests with updates.
+
+**Usage:** Run manually via workflow dispatch to keep the repository up to date.
+
+**Inputs:** None
+
+**Artifacts produced:** None (creates pull requests with configuration changes)
+
+**More info:** See [_doctor action](.github/actions/_doctor)
+
+### [Extract All](.github/workflows/_manual_extract-all.yml)
+Triggers extraction for all valid repositories and sites that have been configured.
+
+**Usage:** Run manually via workflow dispatch to extract documentation from all configured sources.
+
+**Inputs:**
+The workflow supports the following inputs:
+
+- `trigger_merge` - (required) Whether to trigger the merge workflow after each extraction
+
+**Artifacts produced:** None (triggers other workflows)
+
+**More info:** See [_manual_extract-all action](.github/actions/_manual_extract-all)
+
+## Generated Workflows
+The following workflows are automatically generated and maintained by the Doctor workflow based on the configurations found in the repository:
+
+### Extract Repo
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_repo.yml` based on configurations in the `repos/` directory. Provides a dropdown interface to select and extract documentation from a specific repository.
+
+**Usage:** Run manually via workflow dispatch to extract documentation from a specific repository. The dropdown options are automatically updated by the Doctor workflow.
+
+**Inputs:**
+- `repo` - (required) Repository name (dropdown of available repos)
+- `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
+
+**Artifacts produced:**
+- `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
+
+### Extract Site
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_site.yml` based on configurations in the `sites/` directory. Provides a dropdown interface to select and extract documentation from a specific site.
+
+**Usage:** Run manually via workflow dispatch to extract documentation from a specific site. The dropdown options are automatically updated by the Doctor workflow.
+
+**Inputs:**
+- `site` - (required) Site name (dropdown of available sites)
+- `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
+
+**Artifacts produced:**
+- `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
+
+### Run Audit
+Generated and maintained by the Doctor workflow at `.github/workflows/_manual_audit.yml` based on configurations in the `audits/` directory. Provides a dropdown interface to select and run a specific audit.
+
+**Usage:** Run manually via workflow dispatch to run a specific audit. The dropdown options are automatically updated by the Doctor workflow.
+
+**Inputs:**
+- `audit` - (required) Audit name (dropdown of available audits)
+- `sources` - (optional) Sources to audit, comma-separated
+
+**Artifacts produced:**
+- `audit-results` - Contains `audit-results.json` with the audit results
+
+
+## Internal Workflows
+The following workflows are used by the GitHub App for internal purposes. Note that workflows starting with `_` are considered internal.
 
 ### [_Audit](.github/workflows/_audit.yml)
 Audits documentation against configured rules. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to audit against.
@@ -40,17 +108,6 @@ The workflow supports the following inputs:
 
 **More info:** See [_check-pr action](.github/actions/_check-pr)
 
-### [Doctor](.github/workflows/_doctor.yml)
-Maintains the configuration repository by discovering repositories, generating configurations, validating existing configs, and creating pull requests with updates.
-
-**Usage:** Run manually via workflow dispatch to keep the repository up to date.
-
-**Inputs:** None
-
-**Artifacts produced:** None (creates pull requests with configuration changes)
-
-**More info:** See [_doctor action](.github/actions/_doctor)
-
 ### [_Extract](.github/workflows/_extract.yml)
 Extracts documentation from a repository or site.
 
@@ -70,20 +127,6 @@ The workflow supports the following inputs (one of repo, site, or config is requ
 
 **More info:** See [_extract action](.github/actions/_extract)
 
-### [Extract All](.github/workflows/_manual_extract-all.yml)
-Triggers extraction for all valid repositories and sites that have been configured.
-
-**Usage:** Run manually via workflow dispatch to extract documentation from all configured sources.
-
-**Inputs:**
-The workflow supports the following inputs:
-
-- `trigger_merge` - (required) Whether to trigger the merge workflow after each extraction
-
-**Artifacts produced:** None (triggers other workflows)
-
-**More info:** See [_manual_extract-all action](.github/actions/_manual_extract-all)
-
 ### [_Merge](.github/workflows/_merge.yml)
 Merges new extracted documentation databases into the current documentation dataset. Uses concurrency control to ensure only one merge runs at a time.
 
@@ -95,46 +138,6 @@ Merges new extracted documentation databases into the current documentation data
 - `_current-documentation` - Contains `documentation.db` (the merged documentation database) and `checkpoint` (timestamp for tracking purposes)
 
 **More info:** See [_merge action](.github/actions/_merge)
-
-## Generated Workflows
-
-The following workflows are automatically generated and maintained by the Doctor workflow based on the configurations found in the repository:
-
-### Extract Repo
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_repo.yml` based on configurations in the `repos/` directory. Provides a dropdown interface to select and extract documentation from a specific repository.
-
-**Usage:** Run manually via workflow dispatch to extract documentation from a specific repository. The dropdown options are automatically updated by the Doctor workflow.
-
-**Inputs:**
-- `repo` - (required) Repository name (dropdown of available repos)
-- `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
-
-**Artifacts produced:**
-- `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
-
-### Extract Site
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_extract_site.yml` based on configurations in the `sites/` directory. Provides a dropdown interface to select and extract documentation from a specific site.
-
-**Usage:** Run manually via workflow dispatch to extract documentation from a specific site. The dropdown options are automatically updated by the Doctor workflow.
-
-**Inputs:**
-- `site` - (required) Site name (dropdown of available sites)
-- `trigger_merge` - (required) Whether to trigger the merge workflow (defaults to `true`)
-
-**Artifacts produced:**
-- `_extracted-documentation` - Contains `documentation.db` with the extracted documentation
-
-### _Run Audit
-Generated and maintained by the Doctor workflow at `.github/workflows/_manual_audit.yml` based on configurations in the `audits/` directory. Provides a dropdown interface to select and run a specific audit.
-
-**Usage:** Run manually via workflow dispatch to run a specific audit. The dropdown options are automatically updated by the Doctor workflow.
-
-**Inputs:**
-- `audit` - (required) Audit name (dropdown of available audits)
-- `sources` - (optional) Sources to audit, comma-separated
-
-**Artifacts produced:**
-- `audit-results` - Contains `audit-results.json` with the audit results
 
 ## Apps
 
