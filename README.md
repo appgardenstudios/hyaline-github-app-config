@@ -156,8 +156,7 @@ Note that it is only necessary to deploy and use this app if you are unable to u
 Note that the Hyaline GitHub App will trigger workflows in the configuration repository located in your organization or personal account, meaning that you stay in control of your configuration and data. If you wish you can also run your own copy of the Hyaline GitHub app (located in the [configuration repository](https://github.com/appgardenstudios/hyaline-github-app-config)) to prevent any data whatsoever from leaving your organization and being sent to us.
 
 ### 1. Create GitHub App Config Repo
-All of your configuration for the Hyaline GitHub App will live in a single repository in your organization or personal account. The easiest way to set this up is to fork the 
-[hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into the organization or personal account that you will install the GitHub App into.
+All of your configuration for the Hyaline GitHub App will live in a single repository in your organization or personal account. The easiest way to set this up is to fork the [hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into the organization or personal account that you will install the GitHub App into.
 
 Fork (or otherwise clone/push) the [hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) into your organization or personal account. Note that the repository name MUST remain `hyaline-github-app-config` in order to use the hosted version of the Hyaline GitHub App.
 
