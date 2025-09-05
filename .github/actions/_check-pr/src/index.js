@@ -10,6 +10,42 @@ const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
 
 /**
+ * Validate a config file and check if check is enabled
+ * 
+ * @param {string} configPath 
+ * @returns {Promise<boolean>} true if check is valid and enabled
+ */
+async function validateConfig(configPath) {
+  const filename = path.basename(configPath);
+  const outputPath = path.join('.', `validation-${filename}.json`);
+  
+  try {
+    await exec.exec('hyaline', ['validate', 'config', '--config', configPath, '--output', outputPath]);
+    const validationResult = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+    
+    if (!validationResult.valid) {
+      throw new Error(`Configuration validation failed: ${validationResult.error}. Run the Doctor workflow to fix validation issues.`);
+    }
+    
+    if (!validationResult.detail.check.present) {
+      throw new Error(`Check has not been configured for ${configPath}.`);
+    }
+    
+    if (validationResult.detail.check.disabled) {
+      core.notice(`Check is disabled for ${configPath}. Skipping.`);
+      return false;
+    }
+    
+    return true;
+  } finally {
+    // Clean up temp file
+    if (fs.existsSync(outputPath)) {
+      fs.unlinkSync(outputPath);
+    }
+  }
+}
+
+/**
  * Returns the path to the current documentation, or blank
  * 
  * @returns {Promise<string>}
@@ -67,13 +103,17 @@ async function checkPR() {
 
     // Check config path
     if (!fs.existsSync(configPath)) {
-      // If config was provided and invalid, error, else skip (repo missing)
-      if (config) {
-        throw new Error(`config path not found: ${configPath}`);
+      if (repo) {
+        throw new Error(`Configuration file not found for repo: ${repo}. Run the Doctor workflow to generate missing configurations.`);
       } else {
-        console.log('No repo config found. Skipping');
-        return
+        throw new Error(`Configuration file not found: ${configPath}`);
       }
+    }
+
+    // Validate config and check if check is enabled
+    const shouldCheck = await validateConfig(configPath);
+    if (!shouldCheck) {
+      return;
     }
 
     // Get current documentation
