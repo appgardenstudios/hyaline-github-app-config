@@ -1,4 +1,4 @@
-name: Internal - Audit
+name: _Audit
 
 on:
   workflow_dispatch:
