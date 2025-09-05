@@ -146,7 +146,7 @@ The Hyaline GitHub App listens to Pull Request webhook events from configured re
 
 Note that it is only necessary to deploy and use this app if you are unable to use the public Hyaline GitHub App available on GitHub.
 
-## Installation
+## GitHub App Installation
 
 **Prerequisite(s)**
 - A GitHub organization or personal account
