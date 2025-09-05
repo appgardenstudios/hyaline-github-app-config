@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const core = require('@actions/core');
 const exec = require('@actions/exec');
@@ -7,6 +8,42 @@ const {DefaultArtifactClient} = require('@actions/artifact');
 const artifact = new DefaultArtifactClient();
 
 const githubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
+
+/**
+ * Validate a config file and check if extract is enabled
+ * 
+ * @param {string} configPath 
+ * @returns {Promise<boolean>} true if extract is valid and enabled
+ */
+async function validateConfig(configPath) {
+  const filename = path.basename(configPath);
+  const outputPath = path.join('.', `validation-${filename}.json`);
+  
+  try {
+    await exec.exec('hyaline', ['validate', 'config', '--config', configPath, '--output', outputPath]);
+    const validationResult = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+    
+    if (!validationResult.valid) {
+      throw new Error(`Configuration validation failed: ${validationResult.error}. Run the Doctor workflow to fix validation issues.`);
+    }
+    
+    if (!validationResult.detail.extract.present) {
+      throw new Error(`Extract has not been configured for ${configPath}.`);
+    }
+    
+    if (validationResult.detail.extract.disabled) {
+      core.notice(`Extract is disabled for ${configPath}. Skipping.`);
+      return false;
+    }
+    
+    return true;
+  } finally {
+    // Clean up temp file
+    if (fs.existsSync(outputPath)) {
+      fs.unlinkSync(outputPath);
+    }
+  }
+}
 const octokit = github.getOctokit(githubToken);
 
 async function extract() {
@@ -29,6 +66,21 @@ async function extract() {
       configPath = config;
     } else {
       throw new Error("one of repo, site, or config must be set");
+    }
+
+    // Check if config file exists
+    if (!fs.existsSync(configPath)) {
+      if (repo) {
+        throw new Error(`Configuration file not found for repo: ${repo}. Run the Doctor workflow to generate missing configurations.`);
+      } else {
+        throw new Error(`Configuration file not found: ${configPath}`);
+      }
+    }
+
+    // Validate config and check if extract is enabled
+    const shouldExtract = await validateConfig(configPath);
+    if (!shouldExtract) {
+      return;
     }
 
     // Run version
