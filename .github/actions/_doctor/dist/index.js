@@ -32147,7 +32147,9 @@ on:
         description: 'Sources (Comma Separated)'
         type: string
 
-permissions: {}
+permissions:
+  # Only used when HYALINE_LLM_PROVIDER is set to github-models and HYALINE_LLM_TOKEN is not set
+  models: read
 
 jobs:
   audit:
@@ -32168,7 +32170,7 @@ jobs:
           HYALINE_CONFIG_GITHUB_TOKEN: \${{ secrets.HYALINE_CONFIG_GITHUB_TOKEN }}
           HYALINE_LLM_PROVIDER: \${{ vars.HYALINE_LLM_PROVIDER }}
           HYALINE_LLM_MODEL: \${{ vars.HYALINE_LLM_MODEL }}
-          HYALINE_LLM_TOKEN: \${{ secrets.HYALINE_LLM_TOKEN }}`;
+          HYALINE_LLM_TOKEN: \${{ secrets.HYALINE_LLM_TOKEN || (vars.HYALINE_LLM_PROVIDER == 'github-models' && secrets.GITHUB_TOKEN) }}`;
 }
 
 /**
@@ -32248,7 +32250,7 @@ async function doctor() {
     if (!process.env.HYALINE_LLM_MODEL) {
       envErrors.push('HYALINE_LLM_MODEL not set')
     }
-    if (!process.env.HYALINE_LLM_TOKEN) {
+    if (process.env.HYALINE_LLM_PROVIDER !== 'github-models' && !process.env.HYALINE_LLM_TOKEN) {
       envErrors.push('HYALINE_LLM_TOKEN not set')
     }
     if (envErrors.length != 0) {
