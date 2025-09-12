@@ -59,6 +59,8 @@ Generated and maintained by the Doctor workflow at `.github/workflows/_manual_ex
 ### Run Audit
 Generated and maintained by the Doctor workflow at `.github/workflows/_manual_audit.yml` based on configurations in the `audits/` directory. Provides a dropdown interface to select and run a specific audit.
 
+Note: This workflow requests `models: read` permissions for the action's `GITHUB_TOKEN` in order to allow access to [GitHub Models](https://github.com/features/models). However, GitHub Models access is only used when the `HYALINE_LLM_PROVIDER` is configured to be `github-models` and `HYALINE_LLM_TOKEN` isn't set.
+
 **Usage:** Run manually via workflow dispatch to run a specific audit. The dropdown options are automatically updated by the Doctor workflow.
 
 **Inputs:**
@@ -74,6 +76,8 @@ The following workflows are used by the GitHub App for internal purposes. Note t
 
 ### [_Audit](.github/workflows/_audit.yml)
 Audits documentation against configured rules. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to audit against.
+
+Note: This workflow requests `models: read` permissions for the action's `GITHUB_TOKEN` in order to allow access to [GitHub Models](https://github.com/features/models). However, GitHub Models access is only used when the `HYALINE_LLM_PROVIDER` is configured to be `github-models` and `HYALINE_LLM_TOKEN` isn't set.
 
 **Usage:** Run manually via workflow dispatch to audit documentation quality against a configuration.
 
@@ -95,6 +99,8 @@ The workflow supports the following inputs (one of audit, repo, site, or config 
 Checks a pull request for documentation updates. Requires that the `_current-documentation` artifact exists (created by the `_merge` workflow) to check against.
 
 **Usage:** Run automatically by the Hyaline GitHub App when a PR is ready for review and changes are made to the PR. Can also be run manually via workflow dispatch.
+
+Note: This workflow requests `models: read` permissions for the action's `GITHUB_TOKEN` in order to allow access to [GitHub Models](https://github.com/features/models). However, GitHub Models access is only used when the `HYALINE_LLM_PROVIDER` is configured to be `github-models` and `HYALINE_LLM_TOKEN` isn't set.
 
 **Inputs:**
 The workflow supports the following inputs:

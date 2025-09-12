@@ -15,7 +15,9 @@ on:
         description: 'Configuration Path'
         type: string
 
-permissions: {}
+permissions:
+  # Only used when HYALINE_LLM_PROVIDER is set to github-models and HYALINE_LLM_TOKEN is not set
+  models: read
 
 jobs:
   check-pr:
@@ -38,4 +40,4 @@ jobs:
           HYALINE_GITHUB_TOKEN: ${{ secrets.HYALINE_GITHUB_TOKEN }}
           HYALINE_LLM_PROVIDER: ${{ vars.HYALINE_LLM_PROVIDER }}
           HYALINE_LLM_MODEL: ${{ vars.HYALINE_LLM_MODEL }}
-          HYALINE_LLM_TOKEN: ${{ secrets.HYALINE_LLM_TOKEN }}
+          HYALINE_LLM_TOKEN:  ${{ secrets.HYALINE_LLM_TOKEN || (vars.HYALINE_LLM_PROVIDER == 'github-models' && secrets.GITHUB_TOKEN) }}
