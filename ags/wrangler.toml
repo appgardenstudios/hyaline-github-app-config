@@ -1,0 +1,19 @@
+name = "hyaline-github-app"
+compatibility_date = "2025-08-27"
+main = "../.github/apps/_hyaline/src/index.js"
+
+[observability]
+enabled = true
+
+# Production environment
+[env.prod]
+[[env.prod.routes]]
+pattern = "github-app.hyaline.dev"
+custom_domain = true
+
+# Development environment
+[env.dev]
+vars = { HYALINE_CONFIG_REPO = "hyaline-github-app-config-internal" }
+[[env.dev.routes]]
+pattern = "github-app-dev.hyaline.dev"
+custom_domain = true

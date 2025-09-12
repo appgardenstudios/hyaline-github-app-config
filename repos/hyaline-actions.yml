@@ -1,0 +1,36 @@
+llm:
+  provider: ${HYALINE_LLM_PROVIDER}
+  model: ${HYALINE_LLM_MODEL}
+  key: ${HYALINE_LLM_TOKEN}
+
+
+github:
+  token: ${HYALINE_GITHUB_TOKEN}
+
+
+extract:
+  source:
+    id: hyaline-actions
+    description: documentation for hyaline actions
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline-actions.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_TOKEN}
+    include:
+      - "check-pr/README.md"
+      - "setup/README.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+
+
+check:
+  disabled: true

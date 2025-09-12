@@ -1,0 +1,48 @@
+llm:
+  provider: ${HYALINE_LLM_PROVIDER}
+  model: ${HYALINE_LLM_MODEL}
+  key: ${HYALINE_LLM_TOKEN}
+
+
+github:
+  token: ${HYALINE_GITHUB_TOKEN}
+
+
+extract:
+  source:
+    id: hyaline-github-app-config
+    description: Documentation for Repository appgardenstudios/hyaline-github-app-config
+  crawler:
+    type: git
+    options:
+      repo: https://github.com/appgardenstudios/hyaline-github-app-config.git
+      branch: main
+      clone: true
+      auth:
+        type: http
+        options:
+          username: git
+          password: ${HYALINE_GITHUB_TOKEN}
+    include:
+      - "README.md"
+      - ".github/actions/*/README.md"
+      - ".github/apps/*/README.md"
+  extractors:
+    - type: md
+      include:
+        - "**/*.md"
+
+check:
+  code:
+    include:
+      - ".github/actions/*/src/**/*.js"
+      - ".github/apps/*/src/**/*.js"
+    exclude:
+      - "**/*.test.js"
+  documentation:
+    include:
+      - source: hyaline-github-app-config
+  options:
+    detectDocumentationUpdates:
+      source: hyaline-github-app-config
+
