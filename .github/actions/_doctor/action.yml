@@ -1,5 +1,9 @@
 name: 'Action - Doctor'
 description: 'Doctor'
+inputs:
+  upstream:
+    description: 'Upstream repository URL'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
