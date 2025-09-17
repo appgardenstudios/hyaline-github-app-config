@@ -1,0 +1,129 @@
+name: 'Action - Update Hyaline'
+description: 'Update Hyaline from upstream repository'
+inputs:
+  upstream:
+    description: 'Upstream repository URL'
+    required: true
+  connect_upstream_history:
+    description: 'Whether to connect upstream history. Usually only `true` during installation.'
+    required: false
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Git Configuration
+      shell: bash
+      run: |
+        git config --global user.name "Hyaline"
+        git config --global user.email "hyaline-bot@users.noreply.github.com"
+
+    - name: Setup Upstream Remote
+      shell: bash
+      run: git remote add upstream "${{ inputs.upstream }}"
+
+    - name: Fetch Upstream Changes
+      shell: bash
+      run: |
+        echo "Fetching from upstream..."
+        git fetch upstream
+
+    - name: Get Default Branches
+      shell: bash
+      id: branches
+      run: |
+        # Get origin default branch
+        origin_default=$(git remote show origin | grep "HEAD branch" | sed 's/.*: //')
+        echo "origin-default=$origin_default" >> $GITHUB_OUTPUT
+        
+        # Get upstream default branch
+        upstream_default=$(git remote show upstream | grep "HEAD branch" | sed 's/.*: //')
+        echo "upstream-default=$upstream_default" >> $GITHUB_OUTPUT
+        
+        echo "Origin default branch: $origin_default"
+        echo "Upstream default branch: $upstream_default"
+
+    - name: Check for Updates
+      shell: bash
+      id: check-updates
+      run: |
+        if [ "${{ inputs.connect_upstream_history }}" = "true" ]; then
+          echo "has-updates=true" >> $GITHUB_OUTPUT
+          echo "Connecting upstream history - forcing update"
+        else
+          origin_branch="${{ steps.branches.outputs.origin-default }}"
+          upstream_branch="${{ steps.branches.outputs.upstream-default }}"
+
+          # Checkout origin default branch
+          git checkout "$origin_branch"
+
+          # Get current upstream commit
+          upstream_commit=$(git rev-parse "upstream/$upstream_branch")
+          echo "Upstream commit: $upstream_commit"
+
+          # Check if upstream has updates that origin doesn't have
+          # If merge-base of upstream and origin equals upstream commit, then origin contains all upstream changes
+          merge_base=$(git merge-base "upstream/$upstream_branch" "origin/$origin_branch")
+
+          if [ "$merge_base" = "$upstream_commit" ]; then
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+            echo "No updates available - repository is already up to date"
+          else
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "Updates available"
+          fi
+        fi
+
+    - name: Merge Upstream Changes
+      shell: bash
+      if: steps.check-updates.outputs.has-updates == 'true'
+      run: |
+        origin_branch="${{ steps.branches.outputs.origin-default }}"
+        upstream_branch="${{ steps.branches.outputs.upstream-default }}"
+
+        # Checkout origin default branch
+        git checkout "$origin_branch"
+
+        echo "Merging upstream/$upstream_branch into $origin_branch..."
+
+        merge_flags="--no-edit"
+        if [ "${{ inputs.connect_upstream_history }}" = "true" ]; then
+          merge_flags="$merge_flags --allow-unrelated-histories"
+        fi
+
+        if git merge "upstream/$upstream_branch" $merge_flags; then
+          echo "Merge successful"
+        else
+          exit 1
+        fi
+
+    - name: Push Changes
+      shell: bash
+      if: steps.check-updates.outputs.has-updates == 'true'
+      run: |
+        origin_branch="${{ steps.branches.outputs.origin-default }}"
+        
+        echo "Pushing changes to origin/$origin_branch..."
+        
+        if git push origin "$origin_branch"; then
+          echo "Push successful"
+        else
+          exit 1
+        fi
+
+    - name: Annotate Success
+      shell: bash
+      if: steps.check-updates.outputs.has-updates == 'true'
+      run: |
+        echo "::notice::Hyaline was successfully updated from upstream"
+
+    - name: Annotate No Updates
+      shell: bash
+      if: steps.check-updates.outputs.has-updates == 'false'
+      run: |
+        echo "::notice::No updates available - Hyaline is already up to date"
+
+    - name: Annotate Failure
+      shell: bash
+      if: failure()
+      run: |
+        echo "::error::Failed to update Hyaline from upstream. You may need to manually update Hyaline. See: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork#syncing-a-fork-branch-from-the-command-line"

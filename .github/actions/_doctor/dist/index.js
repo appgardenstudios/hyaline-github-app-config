@@ -31846,6 +31846,8 @@ const hyalineOctokit = github.getOctokit(hyalineGitHubToken);
 const configGitHubToken = process.env.HYALINE_CONFIG_GITHUB_TOKEN || '';
 const configOctokit = github.getOctokit(configGitHubToken);
 
+const upstreamUrl = core.getInput('upstream', { required: true });
+
 /**
  * Get the llm block of the hyaline config.
  *
@@ -32206,6 +32208,62 @@ async function validateConfigs(directory) {
 }
 
 /**
+ * Get the default branch for a remote
+ *
+ * @param {string} remoteName - The name of the remote (e.g., 'origin', 'upstream')
+ * @returns {Promise<string>} - The default branch name
+ */
+async function getDefaultBranch(remoteName) {
+  const remoteOutput = await exec.getExecOutput('git', ['remote', 'show', remoteName]);
+  const match = remoteOutput.stdout.match(/HEAD branch: (.+)/);
+  return match ? match[1].trim() : 'main';
+}
+
+/**
+ * Check for upstream updates
+ *
+ * @returns {Promise<{hasUpdates: boolean, error: string|null}>}
+ */
+async function checkUpstreamUpdates() {
+  try {
+    console.log(`Checking for updates from upstream: ${upstreamUrl}`);
+
+    // Add upstream remote
+    await exec.exec('git', ['remote', 'add', 'upstream', upstreamUrl]);
+
+    // Fetch from upstream
+    console.log('Fetching from upstream...');
+    await exec.exec('git', ['fetch', 'upstream']);
+
+    // Get default branches
+    const originDefault = await getDefaultBranch('origin');
+    const upstreamDefault = await getDefaultBranch('upstream');
+    console.log(`Origin default branch: ${originDefault}`);
+    console.log(`Upstream default branch: ${upstreamDefault}`);
+
+    // Get current upstream commit
+    const upstreamCommitOutput = await exec.getExecOutput('git', ['rev-parse', `upstream/${upstreamDefault}`]);
+    const upstreamCommit = upstreamCommitOutput.stdout.trim();
+    console.log(`Upstream commit: ${upstreamCommit}`);
+
+    // Check if upstream commit is an ancestor of origin commit
+    const mergeBaseOutput = await exec.getExecOutput('git', ['merge-base', `upstream/${upstreamDefault}`, `origin/${originDefault}`], { ignoreReturnCode: true });
+    if (mergeBaseOutput.exitCode !== 0) {
+      throw new Error(`Failed to compare upstream and origin branches. Please ensure the "Install Hyaline" workflow has been run. Error: ${mergeBaseOutput.stderr}`);
+    }
+    const mergeBase = mergeBaseOutput.stdout.trim();
+
+    const hasUpdates = mergeBase !== upstreamCommit;
+    console.log(hasUpdates ? 'Updates available from upstream' : 'No updates available - repository is up to date');
+
+    return { hasUpdates, error: null };
+  } catch (error) {
+    console.error('Failed to check upstream updates:', error);
+    return { hasUpdates: false, error: error.message };
+  }
+}
+
+/**
  * Get a PR Body based on changes and validation errors
  * 
  * @param {Array<string>} changes 
@@ -32236,7 +32294,13 @@ function getPRBody(changes, validationErrors = []) {
 }
 
 async function doctor() {
+  let prURL = null;
+  let upstreamStatus;
+
   try {
+    // Check for upstream updates
+    upstreamStatus = await checkUpstreamUpdates();
+
     // Check Secrets and Env Vars
     const envErrors = [];
     if (!process.env.HYALINE_GITHUB_TOKEN) {
@@ -32347,13 +32411,27 @@ async function doctor() {
           title: 'Doctor - Configuration Update',
           body: getPRBody(changes, validationErrors),
         });
-        const prURL = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/pull/${result.data.number}`;
+        prURL = `https://github.com/${github.context.repo.owner}/${github.context.repo.repo}/pull/${result.data.number}`;
         console.log(`Created PR ${prURL}`);
       }
     }
 
-    console.log('Doctor Complete');
+    // Add annotations
+    if (prURL) {
+      core.notice(`Doctor submitted a PR for your review: ${prURL}`);
+    } else {
+      core.notice('Doctor did not find any configuration issues.');
+    }
 
+    if (upstreamStatus.error) {
+      core.warning(`Doctor could not check if hyaline is outdated: ${upstreamStatus.error}.`);
+    } else if (upstreamStatus.hasUpdates) {
+      core.notice('Hyaline is outdated. Consider running the "Update Hyaline" workflow.');
+    } else {
+      core.notice('Hyaline is up-to-date.');
+    }
+
+    console.log('Doctor Complete');
   } catch (error) {
     core.error(error);
     throw error;

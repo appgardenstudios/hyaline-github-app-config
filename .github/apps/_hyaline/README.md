@@ -1,18 +1,18 @@
 # Hyaline GitHub App
-The Hyaline GitHub App listens to Pull Request webhook events from configured repositories and triggers [_Check PR](../../workflows/_check-pr.yml) and [_Extract](../../workflows/_extract.yml) workflows in the forked configuration repository.
+The Hyaline GitHub App listens to Pull Request webhook events from configured repositories and triggers [_Check PR](../../workflows/_check-pr.yml) and [_Extract](../../workflows/_extract.yml) workflows in the your `hyaline-github-app-config` repo instance.
 
 The GitHub App uses [Hono](https://hono.dev/), which is a batteries included JavaScript runtime that can be deployed to a variety of [platforms](https://hono.dev/docs/getting-started/basic).
 
 ## GitHub App Installation
 
-### 1. Fork Config
-Fork the [appgardenstudios/hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository into your org or personal account. You will need to set this up as described in the main [README.md](../../../README.md).
+### 1. Create a `hyaline-github-app-config` repo instance
+Go to the [appgardenstudios/hyaline-github-app-config](https://github.com/appgardenstudios/hyaline-github-app-config) repository, click "Use this template," and create a new repository in your org or personal account. You will need to set this up as described in the main [README.md](../../../README.md).
 
 ### 2. Create GitHub App
-Sign in to GitHub and create a new GitHub App in your organization or personal account. It MUST belong to the same account as the `hyaline-github-app-config` repository you forked above. You will need to supply/configure the following when creating the app:
+Sign in to GitHub and create a new GitHub App in your organization or personal account. It MUST belong to the same account as the `hyaline-github-app-config` repository you created above. You will need to supply/configure the following when creating the app:
 
 - **GitHub App name** - Choose a valid name for this app (e.g. `hyaline-github-app-<my-org>`)
-- **Homepage URL** - Use your own website or the URL for your forked configuration repo from Step 0
+- **Homepage URL** - Use your own website or the URL for your `hyaline-github-app-config` repo instance from Step 1
 - **Webhook > Active** - Uncheck this for now (this will be configured in Step 4)
 - **Permissions** - Leave this empty for now (this will be configured in Step 4)
 - **Where can this GitHub App be installed?** - Leave this set to "Only on this account"
@@ -33,7 +33,7 @@ Choose your desired platform and configure hono to deploy it. You will need to e
 - **GITHUB_APP_ID** - The `App ID` from Step 2 above.
 - **GITHUB_PRIVATE_KEY** - The `Private Key` from Step 2 above.
 - **WEBHOOK_SECRET** - A string used to verify that the caller is indeed GitHub. We recommend using a new UUIDv4.
-- **HYALINE_CONFIG_REPO** - (Optional) The name of the forked configuration repository. If not set `hyaline-github-app-config` will be used.
+- **HYALINE_CONFIG_REPO** - (Optional) The name of your `hyaline-github-app-config` repo instance. If not set `hyaline-github-app-config` will be used.
 
 Note that the endpoint will need to be reachable from GitHub's webhook servers (hooks in [GitHub's meta API endpoint](https://api.github.com/meta)).
 
@@ -53,7 +53,7 @@ Configure the GitHub App to send events to the deployed app. Do the following:
 - Check the **Subscribe to events > Pull request** option
 
 ### 5. Install GitHub App
-Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least the `hyaline-github-app-config` repo you forked so that the GitHub app can use the configuration you set up. Once installed you should see webhook calls being dispatched.
+Go to your organization or personal account settings and install the GitHub app for the repositories you want to use Hyaline with. You will need to give it access to at least your `hyaline-github-app-config` repo instance so that the GitHub app can use the configuration you set up. Once installed you should see webhook calls being dispatched.
 
 ## Running Locally
 To run the app locally you will need a working installed GitHub App (follow the instructions above to install).
